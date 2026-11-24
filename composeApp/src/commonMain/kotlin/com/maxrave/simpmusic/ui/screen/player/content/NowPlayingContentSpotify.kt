@@ -209,6 +209,7 @@ fun NowPlayingContentSpotify(
     state: NowPlayingContentState,
     actions: NowPlayingContentActions,
 ) {
+    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("NowPlayingContentSpotify") }
     val screenInfo = getScreenSizeInfo()
 
     val localDensity = LocalDensity.current
@@ -1826,6 +1827,7 @@ internal fun NowPlayingTrackInfoRow(
     actions: NowPlayingContentActions,
     showCanvasThumbnail: Boolean = true,
 ) {
+    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("NowPlayingTrackInfoRow") }
     Row(
         modifier =
             Modifier
