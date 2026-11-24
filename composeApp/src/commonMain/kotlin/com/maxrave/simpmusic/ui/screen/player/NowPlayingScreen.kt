@@ -501,18 +501,10 @@ fun NowPlayingScreenContent(
         }
     }
 
-    // Crossfade: RGB rainbow color cycling when transitioning between tracks
-    val infiniteTransition = rememberInfiniteTransition(label = "crossfadeRainbow")
-    val rainbowHue by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(1000, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart,
-            ),
-        label = "rainbowHue",
-    )
+    // Crossfade: RGB rainbow color cycling when transitioning between tracks.
+    // Composed ONLY while crossfading. The hue is read here, in composition, so a transition that ran all
+    // the time recomposed this whole screen on every frame, paused or not, which a weak phone cannot keep up with.
+    val rainbowHue = if (timelineState.isCrossfading) rememberRainbowHue() else 0f
     val rainbowColor = hsvToColor(rainbowHue, 1f, 1f)
     val sliderTrackColor by animateColorAsState(
         targetValue = if (timelineState.isCrossfading) rainbowColor else Color.White,
@@ -976,4 +968,21 @@ fun NowPlayingScreenContent(
         state = state,
         actions = actions,
     )
+}
+
+/** A hue that sweeps 0..360 once a second. Call it only while it is needed: reading it recomposes the caller each frame. */
+@Composable
+private fun rememberRainbowHue(): Float {
+    val infiniteTransition = rememberInfiniteTransition(label = "crossfadeRainbow")
+    val hue by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(1000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart,
+            ),
+        label = "rainbowHue",
+    )
+    return hue
 }
