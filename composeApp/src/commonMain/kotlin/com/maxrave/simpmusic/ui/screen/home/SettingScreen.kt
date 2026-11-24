@@ -143,6 +143,19 @@ import com.maxrave.simpmusic.ui.component.SettingItem
 import com.maxrave.simpmusic.ui.component.searchKey
 import com.maxrave.simpmusic.ui.component.settingShown
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
+import com.maxrave.simpmusic.ui.icon.ArrowForwardIos
+import com.maxrave.simpmusic.ui.icon.Headphones
+import com.maxrave.simpmusic.ui.icon.History
+import com.maxrave.simpmusic.ui.icon.Info
+import com.maxrave.simpmusic.ui.icon.Lyrics
+import com.maxrave.simpmusic.ui.icon.MusicNote
+import com.maxrave.simpmusic.ui.icon.Person
+import com.maxrave.simpmusic.ui.icon.Tune
+import androidx.compose.material3.HorizontalDivider
+import simpmusic.composeapp.generated.resources.settings_hub_about
+import simpmusic.composeapp.generated.resources.settings_hub_data
+import simpmusic.composeapp.generated.resources.settings_hub_playback
+import simpmusic.composeapp.generated.resources.settings_hub_services
 import com.maxrave.simpmusic.ui.icon.Close
 import com.maxrave.simpmusic.ui.icon.Error
 import com.maxrave.simpmusic.ui.icon.PeopleAlt
@@ -709,6 +722,15 @@ fun SettingScreen(
     // against it through LocalSettingSearch, so nothing below has to know the search exists.
     var searchQuery by rememberSaveable { mutableStateOf("") }
     val searchText = remember(searchQuery) { searchKey(searchQuery.trim()) }
+    // Lite fork: Settings opens on a short list of sections instead of one 98-row page. Typing in the
+    // search field still looks through every group at once, so nothing becomes harder to find.
+    var section by rememberSaveable { mutableStateOf<String?>(null) }
+    val searching = searchQuery.isNotBlank()
+    val inSection: (String) -> Boolean = { group ->
+        searching || settingSections.firstOrNull { it.id == section }?.groups?.contains(group) == true
+    }
+    val sectionTitle: String? = settingSections.firstOrNull { it.id == section }?.let { stringResource(it.title) }
+    com.maxrave.simpmusic.expect.ui.PlatformBackHandler(enabled = section != null) { section = null }
     // The toolbar is part of the list and scrolls away with it; a pinned, frosted copy takes over
     // once the Devices group has gone under it — Playlist's and Artist's way. The group's height
     // (top padding, header, card) is the scroll that carries it fully under the bar.
@@ -756,7 +778,8 @@ fun SettingScreen(
                     // The toolbar's in-list copy, stretched across the list's side margin so it sits exactly
                     // where the pinned copy appears; the list's top padding already clears the status bar.
                     SettingTopBar(
-                        onBack = { navController.navigateUp() },
+                        onBack = { if (section != null) section = null else navController.navigateUp() },
+                        titleText = sectionTitle,
                         windowInsets = WindowInsets(0),
                         modifier =
                             Modifier.layout { measurable, constraints ->
@@ -774,9 +797,12 @@ fun SettingScreen(
                         // The groups' own corner, so the field reads as one of them.
                         shape = SettingGroupShape,
                     )
+                    if (section == null && !searching) {
+                        SettingsHub(onSelect = { section = it })
+                    }
                     // Above every section, and inside item 0 rather than an item of its own, for the
                     // glow reason above.
-                    SettingGroup(
+                    if (inSection("login_sync")) SettingGroup(
                         title = stringResource(Res.string.login_sync_section),
                         modifier = Modifier.onSizeChanged { devicesGroupHeightPx = it.height },
                     ) {
@@ -821,7 +847,7 @@ fun SettingScreen(
                             onClick = { showLibrarySyncDialog = true },
                         )
                     }
-                    SettingGroup(title = stringResource(Res.string.user_interface)) {
+                    if (inSection("user_interface")) SettingGroup(title = stringResource(Res.string.user_interface)) {
                         val themeModeLabels =
                             listOf(
                                 DataStoreManager.THEME_MODE_SYSTEM to stringResource(Res.string.theme_mode_system),
@@ -1072,7 +1098,7 @@ fun SettingScreen(
                     }
                 }
             }
-            item(key = "content") {
+            if (inSection("content")) item(key = "content") {
                 SettingGroup(title = stringResource(Res.string.content)) {
                     SettingItem(
                         title = stringResource(Res.string.youtube_account),
@@ -1534,7 +1560,7 @@ fun SettingScreen(
                 }
             }
             if (getPlatform() == Platform.Android) {
-                item(key = "audio") {
+                if (inSection("audio")) item(key = "audio") {
                     SettingGroup(title = stringResource(Res.string.audio)) {
                         SettingItem(
                             title = stringResource(Res.string.normalize_volume),
@@ -1594,7 +1620,7 @@ fun SettingScreen(
                     }
                 }
             }
-            item(key = "playback") {
+            if (inSection("playback")) item(key = "playback") {
                 SettingGroup(title = stringResource(Res.string.playback)) {
                     // Under Playback rather than Audio because that whole group sits inside an
                     // Android-only branch — "Open system equalizer" is an Android feature — and this
@@ -1794,7 +1820,7 @@ fun SettingScreen(
             // Deliberately not part of "storage" further down, which is Android-only: tracking and the
             // rows it leaves behind exist on Desktop just the same. The switch that produces the history
             // and the button that erases it belong together.
-            item(key = "listening_history") {
+            if (inSection("listening_history")) item(key = "listening_history") {
                 SettingGroup(title = stringResource(Res.string.listening_history)) {
                     SettingItem(
                         title = stringResource(Res.string.local_tracking_title),
@@ -1824,7 +1850,7 @@ fun SettingScreen(
                     )
                 }
             }
-            item(key = "lyrics") {
+            if (inSection("lyrics")) item(key = "lyrics") {
                 SettingGroup(title = stringResource(Res.string.lyrics)) {
                     SettingItem(
                         title = stringResource(Res.string.main_lyrics_provider),
@@ -2024,7 +2050,7 @@ fun SettingScreen(
                     )
                 }
             }
-            item(key = "AI") {
+            if (inSection("AI")) item(key = "AI") {
                 SettingGroup(title = stringResource(Res.string.ai)) {
                     SettingItem(
                         title = stringResource(Res.string.ai_provider),
@@ -2175,7 +2201,7 @@ fun SettingScreen(
                     )
                 }
             }
-            item(key = "spotify") {
+            if (inSection("spotify")) item(key = "spotify") {
                 SettingGroup(title = stringResource(Res.string.spotify)) {
                     SettingItem(
                         // The title follows the state: a row that still reads "Log in" while logged in
@@ -2224,7 +2250,7 @@ fun SettingScreen(
                     )
                 }
             }
-            item(key = "discord") {
+            if (inSection("discord")) item(key = "discord") {
                 SettingGroup(title = stringResource(Res.string.discord_integration)) {
                     SettingItem(
                         title =
@@ -2260,7 +2286,7 @@ fun SettingScreen(
             // Hidden entirely when the build carries no Last.fm credentials — a FOSS build, or a full
             // build whose local.properties has no key.
             if (viewModel.lastfmAvailable) {
-                item(key = "lastfm") {
+                if (inSection("lastfm")) item(key = "lastfm") {
                     SettingGroup(title = stringResource(Res.string.lastfm_integration)) {
                         SettingItem(
                             title =
@@ -2294,7 +2320,7 @@ fun SettingScreen(
                     }
                 }
             }
-            item(key = "sponsor_block") {
+            if (inSection("sponsor_block")) item(key = "sponsor_block") {
                 SettingGroup(
                     title = stringResource(Res.string.sponsorBlock),
                     // The project's note sits under the card, where a grouped list keeps its explanations.
@@ -2370,7 +2396,7 @@ fun SettingScreen(
                 }
             }
             if (getPlatform() == Platform.Android) {
-                item(key = "storage") {
+                if (inSection("storage")) item(key = "storage") {
                     SettingGroup(title = stringResource(Res.string.storage)) {
                         SettingItem(
                             title = stringResource(Res.string.player_cache),
@@ -2679,7 +2705,7 @@ fun SettingScreen(
                     }
                 }
             }
-            item(key = "backup") {
+            if (inSection("backup")) item(key = "backup") {
                 SettingGroup(
                     title = stringResource(Res.string.backup),
                     footer = {
@@ -2843,7 +2869,7 @@ fun SettingScreen(
                     )
                 }
             }
-            item(key = "about_us") {
+            if (inSection("about_us")) item(key = "about_us") {
                 SettingGroup(title = stringResource(Res.string.about_us)) {
                     SettingItem(
                         title = stringResource(Res.string.version),
@@ -2943,7 +2969,7 @@ fun SettingScreen(
                     )
                 }
             }
-            item(key = "developer_option") {
+            if (inSection("developer_option")) item(key = "developer_option") {
                 SettingGroup(title = stringResource(Res.string.developer_option)) {
                     SettingItem(
                         title = stringResource(Res.string.app_log),
@@ -3586,7 +3612,8 @@ fun SettingScreen(
         exit = fadeOut() + slideOutVertically(),
     ) {
         SettingTopBar(
-            onBack = { navController.navigateUp() },
+            onBack = { if (section != null) section = null else navController.navigateUp() },
+                        titleText = sectionTitle,
             // The house recipe from AlbumScreen's bars, thinned: ultraThin's built-in tint stacked
             // on this page's dark ground read as a solid lid. 0.3 keeps the blur doing the work and
             // the tint only settling legibility.
@@ -3605,11 +3632,12 @@ private fun SettingTopBar(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    titleText: String? = null,
 ) {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(Res.string.settings),
+                text = titleText ?: stringResource(Res.string.settings),
                 style = typo().titleMedium,
             )
         },
@@ -3846,5 +3874,72 @@ private fun AiModelRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+    }
+}
+
+
+private class SettingsSectionDef(
+    val id: String,
+    val title: org.jetbrains.compose.resources.StringResource,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    // Keys of the groups (the `item(key = ...)` names below) that live in this section.
+    val groups: Set<String>,
+)
+
+private val settingSections: List<SettingsSectionDef> =
+    listOf(
+        SettingsSectionDef("interface", Res.string.user_interface, SimpIcons.Tune, setOf("user_interface")),
+        SettingsSectionDef("content", Res.string.content, SimpIcons.MusicNote, setOf("content")),
+        SettingsSectionDef("playback", Res.string.settings_hub_playback, SimpIcons.Headphones, setOf("audio", "playback")),
+        SettingsSectionDef("lyrics", Res.string.lyrics, SimpIcons.Lyrics, setOf("lyrics")),
+        SettingsSectionDef(
+            "services",
+            Res.string.settings_hub_services,
+            SimpIcons.Person,
+            setOf("login_sync", "AI", "spotify", "discord", "lastfm", "sponsor_block"),
+        ),
+        SettingsSectionDef("data", Res.string.settings_hub_data, SimpIcons.History, setOf("listening_history", "storage", "backup")),
+        SettingsSectionDef("about", Res.string.settings_hub_about, SimpIcons.Info, setOf("about_us", "developer_option")),
+    )
+
+/** The first thing Settings shows: one row per section, so nothing is more than two taps away. */
+@Composable
+private fun SettingsHub(onSelect: (String) -> Unit) {
+    SettingGroup(title = stringResource(Res.string.settings)) {
+        settingSections.forEachIndexed { index, def ->
+            if (index > 0) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(start = 56.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                )
+            }
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelect(def.id) }
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = def.icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(Modifier.width(16.dp))
+                Text(
+                    text = stringResource(def.title),
+                    style = typo().titleMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    imageVector = SimpIcons.ArrowForwardIos,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
     }
 }

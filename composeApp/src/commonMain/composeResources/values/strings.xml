@@ -1170,4 +1170,8 @@
     <string name="soundcloud_play_count_info">%1$s - song info</string>
     <string name="replay_mix">Replay Mix</string>
     <string name="replay_mix_subtitle">Your most played lately · updated daily</string>
+    <string name="settings_hub_services">Accounts &amp; services</string>
+    <string name="settings_hub_playback">Playback &amp; audio</string>
+    <string name="settings_hub_data">Data &amp; storage</string>
+    <string name="settings_hub_about">About &amp; developer</string>
 </resources>

@@ -77,7 +77,7 @@ import com.maxrave.simpmusic.expect.ui.layerBackdrop
 import com.maxrave.simpmusic.expect.ui.LocalAppBackdrop
 import com.maxrave.simpmusic.expect.ui.rememberBackdrop
 import com.maxrave.simpmusic.extension.copy
-import com.maxrave.simpmusic.ui.component.AppBottomNavigationBar
+import com.maxrave.simpmusic.ui.component.SimpleBottomBar
 import com.maxrave.simpmusic.ui.component.AppNavigationRail
 import com.maxrave.simpmusic.ui.component.DesktopSidebar
 import com.maxrave.simpmusic.ui.component.LiquidGlassAppBottomNavigationBar
@@ -569,10 +569,9 @@ fun App(
                     ) {
                         // On Android both materials go through the folding bar, which draws the mini
                         // player itself. Desktop keeps the always-open flat bar under its own one.
-                        val useFoldingBar = getPlatform() == Platform.Android || isLiquidGlassEnabled == TRUE
                         Column {
                             AnimatedVisibility(
-                                isShowMiniPlayer && !useFoldingBar && isLiquidGlassEnabled == DataStoreManager.FALSE,
+                                isShowMiniPlayer,
                                 enter = fadeIn() + slideInHorizontally(),
                                 exit = fadeOut(),
                             ) {
@@ -598,27 +597,11 @@ fun App(
                                     },
                                 )
                             }
-                            if (useFoldingBar) {
-                                LiquidGlassAppBottomNavigationBar(
-                                    navController = navController,
-                                    backdrop = backdrop,
-                                    viewModel = viewModel,
-                                    onOpenNowPlaying = { isShowNowPlaylistScreen = true },
-                                    isScrolledToTop = isScrolledToTop,
-                                    showAnalyticsTab = showAnalyticsTab,
-                                    showMixForYouTab = showMixForYouTab,
-                                    liquidGlass = isLiquidGlassEnabled == TRUE,
-                                ) { klass ->
-                                    viewModel.reloadDestination(klass)
-                                }
-                            } else {
-                                AppBottomNavigationBar(
-                                    navController = navController,
-                                    showAnalyticsTab = showAnalyticsTab,
-                                    showMixForYouTab = showMixForYouTab,
-                                ) { klass ->
-                                    viewModel.reloadDestination(klass)
-                                }
+                            SimpleBottomBar(
+                                navController = navController,
+                                showMixForYouTab = showMixForYouTab,
+                            ) { klass ->
+                                viewModel.reloadDestination(klass)
                             }
                         }
                     }

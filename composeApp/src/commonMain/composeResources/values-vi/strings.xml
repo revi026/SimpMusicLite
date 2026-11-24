@@ -989,4 +989,8 @@
     <string name="comments_load_error">Không thể tải bình luận</string>
     <string name="comment_post_error">Không thể đăng bình luận</string>
     <string name="comments_need_channel">Tạo một kênh YouTube để bình luận</string>
+    <string name="settings_hub_services">Tài khoản &amp; dịch vụ</string>
+    <string name="settings_hub_playback">Phát nhạc &amp; âm thanh</string>
+    <string name="settings_hub_data">Dữ liệu &amp; lưu trữ</string>
+    <string name="settings_hub_about">Giới thiệu &amp; nhà phát triển</string>
 </resources>
