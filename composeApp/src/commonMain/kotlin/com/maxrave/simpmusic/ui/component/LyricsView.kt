@@ -436,7 +436,6 @@ fun LyricsView(
     dataStoreManager: DataStoreManager = koinInject(),
     romanizer: LyricsRomanizerRepository = koinInject(),
 ) {
-    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("LyricsView") }
     val listState = rememberLazyListState()
     // AMLL drops blur to zero while the user is scrolling by hand (resolveBlurLevel:
     // `if (this.scrollState.isTouchScrolled || isFocused) return 0`) — you are reading ahead at
@@ -849,7 +848,6 @@ fun LyricsLineItem(
     romanizedWords: String? = null,
     modifier: Modifier = Modifier,
 ) {
-    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("LyricsLineItem") }
     // Both halves live INSIDE the Crossfade. They did not before: the large one was in here and the
     // small one sat outside behind a plain `if`, so the small one was removed the instant the state
     // flipped while the large one was still fading in — the line appeared to blink out and come
@@ -970,7 +968,6 @@ fun RichSyncLyricsLineItem(
     wrappedLineSpacing: Dp = 0.dp,
     modifier: Modifier = Modifier,
 ) {
-    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("RichSyncLyricsLineItem") }
     val playhead = rememberSmoothPlayhead(currentTimeMs, enabled = isCurrent)
     val originalWords = remember(parsedLine.words) { parsedLine.words.joinToString(" ") { it.text } }
     val lineDirection = rememberLyricLayoutDirection(originalWords)

@@ -43,7 +43,6 @@ jobs:
           ./gradlew androidApp:assembleRelease \
             -PisFullBuild=false \
             -Psimpmusic.abis=${{ inputs.abis || 'arm64-v8a' }} \
-            -Psimpmusic.minify=false \
             --stacktrace 2>&1 | tee "$RUNNER_TEMP/build.log"
 
       # Logs need a login to read; annotations do not. Surface the Gradle error there.

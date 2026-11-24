@@ -124,8 +124,6 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TEMPORARY diagnostic, off unless started with `--ez diag true`.
-        if (intent.getBooleanExtra("diag", false)) com.maxrave.simpmusic.diag.FrameDiag.start()
         loadKoinModules(
             module {
                 single<AppCompatActivity> { this@MainActivity }

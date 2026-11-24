@@ -210,7 +210,6 @@ fun NowPlayingContentSpotify(
     state: NowPlayingContentState,
     actions: NowPlayingContentActions,
 ) {
-    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("NowPlayingContentSpotify") }
     // The timeline ticks every 100 ms; only whether it is still loading matters here.
     val timelineLoading by remember(state) { derivedStateOf { state.timelineState.loading } }
     val screenInfo = getScreenSizeInfo()
@@ -1830,7 +1829,6 @@ internal fun NowPlayingTrackInfoRow(
     actions: NowPlayingContentActions,
     showCanvasThumbnail: Boolean = true,
 ) {
-    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("NowPlayingTrackInfoRow") }
     Row(
         modifier =
             Modifier

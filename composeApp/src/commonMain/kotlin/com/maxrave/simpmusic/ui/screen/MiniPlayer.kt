@@ -167,7 +167,6 @@ fun MiniPlayer(
     /** Lets the queue's song sheets open artist and album pages; the Desktop capsule's queue needs it. */
     navController: NavController? = null,
 ) {
-    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("MiniPlayer") }
     val isLiquidGlassEnabled by sharedViewModel.getEnableLiquidGlass().collectAsStateWithLifecycle(DataStoreManager.FALSE)
     val controllerState by sharedViewModel.controllerState.collectAsStateWithLifecycle()
     val timelineState by sharedViewModel.timeline.collectAsStateWithLifecycle()

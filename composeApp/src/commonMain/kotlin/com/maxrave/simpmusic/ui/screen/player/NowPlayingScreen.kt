@@ -130,7 +130,6 @@ fun NowPlayingScreen(
     navController: NavController,
     onDismiss: () -> Unit = {},
 ) {
-    androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("NowPlayingScreen") }
     val coroutineScope = rememberCoroutineScope()
     val sheetState =
         rememberModalBottomSheetState(
