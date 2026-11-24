@@ -100,9 +100,11 @@ android {
             )
             splits {
                 abi {
-                    isEnable = true
+                    // AGP rejects the same ABI in ndk.abiFilters and in splits, so a single-ABI
+                    // build relies on abiFilters alone.
+                    isEnable = abis.size > 1
                     reset()
-                    isUniversalApk = abis.size > 1
+                    isUniversalApk = true
                     include(*abis)
                 }
             }
