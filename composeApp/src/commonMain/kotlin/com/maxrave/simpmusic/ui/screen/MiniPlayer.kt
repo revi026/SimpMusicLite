@@ -52,7 +52,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -394,18 +394,16 @@ fun MiniPlayer(
                                 contentAlignment = Alignment.Center,
                             ) {
                                 if (isFlat) {
-                                    // Progress rides a ring around the artwork: wavy while playing, flat when paused.
-                                    val ringStroke = Stroke(width = with(LocalDensity.current) { 3.dp.toPx() }, cap = StrokeCap.Round)
-                                    CircularWavyProgressIndicator(
+                                    // Progress rides a ring around the artwork. Lite fork: a plain ring. The wavy
+                                    // indicator animates its wave offset forever, even paused, which kept the whole
+                                    // screen redrawing 40 times a second on the target phone.
+                                    CircularProgressIndicator(
                                         progress = { animatedProgress },
                                         modifier = Modifier.fillMaxSize(),
                                         color = MaterialTheme.colorScheme.primary,
                                         trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                                        stroke = ringStroke,
-                                        trackStroke = ringStroke,
-                                        // A raw 0/1, never a tweened value: the node animates amplitude
-                                        // itself and drops new targets mid-animation (see WavySeekBar).
-                                        amplitude = { p -> if (p > 0f && isPlaying) 1f else 0f },
+                                        strokeWidth = 3.dp,
+                                        strokeCap = StrokeCap.Round,
                                     )
                                 }
                                 AsyncImage(
