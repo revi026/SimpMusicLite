@@ -731,6 +731,8 @@ fun SettingScreen(
     }
     val sectionTitle: String? = settingSections.firstOrNull { it.id == section }?.let { stringResource(it.title) }
     com.maxrave.simpmusic.expect.ui.PlatformBackHandler(enabled = section != null) { section = null }
+    // A section opens at its top, not where the list happened to be scrolled in the hub.
+    LaunchedEffect(section) { settingListState.scrollToItem(0) }
     // The toolbar is part of the list and scrolls away with it; a pinned, frosted copy takes over
     // once the Devices group has gone under it — Playlist's and Artist's way. The group's height
     // (top padding, header, card) is the scroll that carries it fully under the bar.

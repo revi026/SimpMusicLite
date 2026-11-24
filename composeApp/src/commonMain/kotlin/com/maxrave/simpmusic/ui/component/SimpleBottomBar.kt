@@ -48,6 +48,9 @@ fun SimpleBottomBar(
                 onClick = {
                     if (atRoot) {
                         reloadDestinationIfNeeded(screen.destination::class)
+                    } else if (selected && navController.popBackStack(screen.destination, inclusive = false)) {
+                        // Inside this tab (Settings under Home): pop back to its root. Going through the
+                        // save/restore navigation below would restore the very screen that was just popped.
                     } else {
                         navController.navigate(screen.destination) {
                             popUpTo(navController.graph.startDestinationId) {
