@@ -613,10 +613,8 @@ fun HomeScreen(
 
             userStarted -> Logger.i("Promo", "Skipped ${banner.id}: the user started before its turn")
 
-            else -> {
-                Logger.i("Promo", "Picked ${banner.id}, waiting for its turn")
-                promoBanner = banner
-            }
+            // Lite fork: the author's promo banners are never shown.
+            else -> Logger.i("Promo", "Lite fork: promo banner ${banner.id} not shown")
         }
     }
     // Everything that keeps the banner off screen: any other dialog (it waits its turn behind them),

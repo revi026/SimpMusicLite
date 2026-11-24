@@ -2178,7 +2178,8 @@ class SharedViewModel(
 
     fun getCustomThemeColor() = dataStoreManager.customThemeColor
 
-    fun getNowPlayingStyle() = dataStoreManager.nowPlayingStyle
+    // Lite fork: only the classic Now Playing style is kept, whatever the stored setting says.
+    fun getNowPlayingStyle() = kotlinx.coroutines.flow.flowOf(DataStoreManager.NOW_PLAYING_STYLE_SPOTIFY)
 
     fun getLyricsStyle() = dataStoreManager.lyricsStyle
 

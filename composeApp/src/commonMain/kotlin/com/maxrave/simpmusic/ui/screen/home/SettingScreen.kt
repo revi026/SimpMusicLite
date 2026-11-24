@@ -883,37 +883,7 @@ fun SettingScreen(
                         // themselves. The requirement is spelled out on the option itself rather than left
                         // for the user to discover after switching.
                         val requiresAndroid12 = " (" + stringResource(Res.string.requires_android_12) + ")"
-                        val nowPlayingStyleLabels =
-                            listOf(
-                                DataStoreManager.NOW_PLAYING_STYLE_SPOTIFY to stringResource(Res.string.now_playing_style_spotify),
-                                DataStoreManager.NOW_PLAYING_STYLE_M3_EXPRESSIVE to stringResource(Res.string.now_playing_style_m3_expressive),
-                                DataStoreManager.NOW_PLAYING_STYLE_APPLE_MUSIC to
-                                    stringResource(Res.string.now_playing_style_apple_music) + requiresAndroid12,
-                                DataStoreManager.NOW_PLAYING_STYLE_SOUNDCLOUD to stringResource(Res.string.now_playing_style_soundcloud),
-                            )
-                        SettingItem(
-                            title = stringResource(Res.string.now_playing_style),
-                            subtitle = nowPlayingStyleLabels.firstOrNull { it.first == nowPlayingStyle }?.second ?: "",
-                            onClick = {
-                                viewModel.setAlertData(
-                                    SettingAlertState(
-                                        title = runBlocking { getString(Res.string.now_playing_style) },
-                                        selectOne =
-                                            SettingAlertState.SelectData(
-                                                listSelect = nowPlayingStyleLabels.map { (it.first == nowPlayingStyle) to it.second },
-                                            ),
-                                        confirm =
-                                            runBlocking { getString(Res.string.change) } to { state ->
-                                                val selected = state.selectOne?.getSelected()
-                                                nowPlayingStyleLabels.firstOrNull { it.second == selected }?.first?.let {
-                                                    sharedViewModel.setNowPlayingStyle(it)
-                                                }
-                                            },
-                                        dismiss = runBlocking { getString(Res.string.cancel) },
-                                    ),
-                                )
-                            },
-                        )
+                        // Lite fork: no Now Playing style picker, the classic style is the only one.
                         // Hidden outright below Android 12 rather than offered with one option: the Apple
                         // Music treatment IS the blur, and Modifier.blur is a documented no-op there, so
                         // the choice would be between Classic and a broken-looking Classic.
@@ -2946,13 +2916,7 @@ fun SettingScreen(
                             uriHandler.openUri("https://www.simpmusic.org/blogs")
                         },
                     )
-                    if (getPlatform() == Platform.Android) {
-                        SettingItem(
-                            title = stringResource(Res.string.blog_notification_title),
-                            subtitle = stringResource(Res.string.blog_notification_description),
-                            switch = (blogNotificationEnabled to { viewModel.setBlogNotificationEnabled(it) }),
-                        )
-                    }
+                    // Lite fork: no blog notification switch, the worker is never scheduled.
                     SettingItem(
                         title = stringResource(Res.string.buy_me_a_coffee),
                         subtitle = stringResource(Res.string.donation),

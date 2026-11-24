@@ -219,12 +219,7 @@ private fun CreateSheet(
                     subtitle = stringResource(Res.string.create_radio_description),
                     onClick = onRadio,
                 )
-                CreateRow(
-                    icon = SimpIcons.Groups,
-                    title = stringResource(Res.string.listen_together),
-                    subtitle = stringResource(if (liveRoom) Res.string.create_room_live else Res.string.create_room_description),
-                    onClick = onListenTogether,
-                )
+                // Lite fork: no Listen Together row.
                 EndOfModalBottomSheet()
             }
         }

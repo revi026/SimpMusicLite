@@ -496,11 +496,8 @@ fun LibraryScreen(
                     )
                 }
             },
-            // The Library bar had no actions slot at all — added for the Listen Together entry,
-            // which the design canvas puts on Home AND Library.
-            actions = {
-                ListenTogetherIconButton { navController.navigate(ListenTogetherDestination) }
-            },
+            // Lite fork: no Listen Together entry.
+            actions = {},
         )
         AnimatedVisibility(visible = selectionState.isActive) {
             SongSelectionTopAppBar(
@@ -544,7 +541,8 @@ fun LibraryScreen(
                 }
                 // Nothing to recap without the plays — gated exactly as the YouTube chip above
                 // is gated on being logged in.
-                if (type == LibraryChipType.WRAPPED && !localTrackingEnabled) {
+                // Lite fork: Wrapped is removed, so its chip never shows.
+                if (type == LibraryChipType.WRAPPED) {
                     return@forEach
                 }
                 Chip(
