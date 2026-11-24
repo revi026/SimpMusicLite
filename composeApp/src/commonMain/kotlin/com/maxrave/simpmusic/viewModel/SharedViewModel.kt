@@ -293,6 +293,13 @@ class SharedViewModel(
     val shareSavedLyrics: StateFlow<Boolean> get() = _shareSavedLyrics
 
     init {
+        // A custom OpenAI base URL saved without its trailing slash makes the AI client drop the last
+        // path segment ("https://host/v1" is requested as "https://host/chat/completions"). Repaired once
+        // here for values saved before the setter added the slash.
+        viewModelScope.launch {
+            val saved = dataStoreManager.customOpenAIBaseUrl.first()
+            if (saved.isNotEmpty() && !saved.endsWith("/")) dataStoreManager.setCustomOpenAIBaseUrl("$saved/")
+        }
         viewModelScope.launch {
             log("SharedViewModel init")
             if (dataStoreManager.appVersion.first() != VersionManager.getVersionName()) {

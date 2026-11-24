@@ -881,7 +881,10 @@ class SettingsViewModel(
 
     fun setCustomOpenAIBaseUrl(baseUrl: String) {
         viewModelScope.launch {
-            dataStoreManager.setCustomOpenAIBaseUrl(baseUrl)
+            // The AI client resolves "chat/completions" against this URL, so without a trailing slash
+            // its last segment ("v1") is replaced instead of extended.
+            val normalized = baseUrl.trim().let { if (it.isNotEmpty() && !it.endsWith("/")) "$it/" else it }
+            dataStoreManager.setCustomOpenAIBaseUrl(normalized)
             getCustomOpenAIBaseUrl()
         }
     }
