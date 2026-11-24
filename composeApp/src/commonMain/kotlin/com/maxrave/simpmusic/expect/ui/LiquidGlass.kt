@@ -5,34 +5,23 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import com.kyant.backdrop.backdrops.LayerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
-import com.kyant.backdrop.drawBackdrop
-import com.kyant.backdrop.effects.blur
-import com.kyant.backdrop.effects.colorControls
-import com.kyant.backdrop.effects.lens
-import com.kyant.backdrop.effects.vibrancy
-import kotlin.math.sign
-import com.kyant.backdrop.backdrops.layerBackdrop as nativeBackdrop
 
 /**
  * The backdrop a glass surface samples from.
  *
- * This used to be an `expect class` with a real Android actual and a no-op JVM one,
- * because desktop was assumed to have no Kyant backend. It does: `io.github.kyant0:backdrop`
- * is a KMP artifact declared in `commonMain`, and its desktop variant ships the same
- * API backed by `SkikoRuntimeShader`. So there is nothing left to abstract over — the
- * whole effect is plain common code, and the alias only survives so the ~20 call sites
- * keep reading `PlatformBackdrop`.
+ * Lite fork: nothing samples it any more (see [layerBackdrop] and `liquidGlass`), the type only
+ * survives so the many call sites keep compiling unchanged.
  */
 typealias PlatformBackdrop = LayerBackdrop
 
-/** Marks a composable as the source layer that sibling glass surfaces refract. */
-fun Modifier.layerBackdrop(backdrop: PlatformBackdrop): Modifier = this.nativeBackdrop(backdrop)
+/**
+ * Upstream marks a composable as the source layer that glass surfaces refract. Lite fork: a no-op,
+ * so no screen is recorded into an extra offscreen layer every frame.
+ */
+@Suppress("UNUSED_PARAMETER")
+fun Modifier.layerBackdrop(backdrop: PlatformBackdrop): Modifier = this
 
 @Composable
 fun rememberBackdrop(color: Color): PlatformBackdrop =
@@ -42,8 +31,7 @@ fun rememberBackdrop(color: Color): PlatformBackdrop =
     }
 
 /**
- * The backdrop App records behind its screens, for glass drawn outside them: the action sheets
- * (SheetSurface) open in a layer of their own and so cannot be siblings of the source. Null where no
+ * The backdrop App records behind its screens, for glass drawn outside them. Null where no
  * screen provides it, which draws those sheets flat.
  */
 val LocalAppBackdrop = staticCompositionLocalOf<PlatformBackdrop?> { null }
@@ -53,41 +41,3 @@ val LocalAppBackdrop = staticCompositionLocalOf<PlatformBackdrop?> { null }
  * the app window rather than whatever its own layer reports. 0 where not provided.
  */
 val LocalAppWindowHeight = compositionLocalOf { 0 }
-
-fun Modifier.drawBackdropCustomShape(
-    backdrop: PlatformBackdrop,
-    layer: GraphicsLayer,
-    luminanceAnimation: Float,
-    shape: Shape,
-): Modifier =
-    this.drawBackdrop(
-        backdrop = backdrop,
-        effects = {
-            val l = (luminanceAnimation * 2f - 1f).let { sign(it) * it * it }
-            vibrancy()
-            colorControls(
-                // Neutral brightness/contrast: the old curve washed the glass out to white on bright
-                // backgrounds ("đục trắng"). Darkening is done in onDrawSurface (keeps "đục đen").
-                brightness = 0.05f,
-                contrast = 1f,
-                saturation = 1.5f,
-            )
-            blur(
-                if (l > 0f) {
-                    lerp(8f.dp.toPx(), 16f.dp.toPx(), l)
-                } else {
-                    lerp(8f.dp.toPx(), 2f.dp.toPx(), -l)
-                },
-            )
-            lens(24f.dp.toPx(), size.minDimension / 2f, true)
-        },
-        onDrawBackdrop = { drawBackdrop ->
-            drawBackdrop()
-            layer.record { drawBackdrop() }
-        },
-        shape = { shape },
-        onDrawSurface = {
-            val darken = lerp(0.12f, 0.5f, ((luminanceAnimation - 0.3f) / 0.5f).coerceIn(0f, 1f))
-            drawRect(Color.Black.copy(alpha = darken))
-        },
-    )

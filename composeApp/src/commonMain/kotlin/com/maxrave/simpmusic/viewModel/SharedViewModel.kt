@@ -2161,7 +2161,8 @@ class SharedViewModel(
         }
     }
 
-    fun getEnableLiquidGlass() = dataStoreManager.enableLiquidGlass
+    // Lite fork: liquid glass is removed, whatever the stored setting says.
+    fun getEnableLiquidGlass() = kotlinx.coroutines.flow.flowOf(FALSE)
 
     /** "Scroll long text": on unless the user turned it off, so a fresh install keeps scrolling. */
     fun getTitleMarquee(): Flow<Boolean> = dataStoreManager.getString(TITLE_MARQUEE_KEY).map { it != DataStoreManager.FALSE }

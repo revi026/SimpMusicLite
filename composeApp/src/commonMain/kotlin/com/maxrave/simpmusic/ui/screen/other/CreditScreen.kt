@@ -54,10 +54,10 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.utils.VersionManager
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownTypography
-import dev.chrisbanes.haze.HazeInput
-import dev.chrisbanes.haze.blur.hazeBlur
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import com.maxrave.simpmusic.ui.noblur.HazeInput
+import com.maxrave.simpmusic.ui.noblur.hazeBlur
+import com.maxrave.simpmusic.ui.noblur.hazeSource
+import com.maxrave.simpmusic.ui.noblur.rememberHazeState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import simpmusic.composeapp.generated.resources.*

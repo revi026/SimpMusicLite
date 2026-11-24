@@ -53,10 +53,10 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.LogInViewModel
 import com.maxrave.simpmusic.viewModel.SettingsViewModel
 import com.maxrave.simpmusic.viewModel.BrowserLoginViewModel
-import dev.chrisbanes.haze.HazeInput
-import dev.chrisbanes.haze.blur.hazeBlur
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import com.maxrave.simpmusic.ui.noblur.HazeInput
+import com.maxrave.simpmusic.ui.noblur.hazeBlur
+import com.maxrave.simpmusic.ui.noblur.hazeSource
+import com.maxrave.simpmusic.ui.noblur.rememberHazeState
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel

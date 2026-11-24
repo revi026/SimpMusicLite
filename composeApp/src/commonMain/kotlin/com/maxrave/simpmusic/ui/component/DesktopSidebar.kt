@@ -105,10 +105,10 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.LibrarySidebarItem
 import com.maxrave.simpmusic.viewModel.LibrarySidebarKind
 import com.maxrave.simpmusic.viewModel.LibrarySidebarViewModel
-import dev.chrisbanes.haze.HazeInput
-import dev.chrisbanes.haze.blur.hazeBlur
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import com.maxrave.simpmusic.ui.noblur.HazeInput
+import com.maxrave.simpmusic.ui.noblur.hazeBlur
+import com.maxrave.simpmusic.ui.noblur.hazeSource
+import com.maxrave.simpmusic.ui.noblur.rememberHazeState
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource

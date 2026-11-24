@@ -178,9 +178,7 @@ kotlin {
             api(libs.markdown)
 
             // Blur Haze
-            implementation(libs.haze)
-            implementation(libs.haze.blur)
-            implementation(libs.haze.material)
+            // Lite fork: haze (blur) is gone, see ui/noblur/NoBlur.kt.
 
             api(libs.cmptoast)
 

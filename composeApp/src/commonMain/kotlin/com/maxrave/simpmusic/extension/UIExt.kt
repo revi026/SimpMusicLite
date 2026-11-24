@@ -85,9 +85,7 @@ import com.maxrave.simpmusic.Platform
 import com.maxrave.simpmusic.getPlatform
 import com.maxrave.simpmusic.ui.theme.LocalAppColors
 import com.maxrave.simpmusic.ui.theme.LocalTitleMarquee
-import dev.chrisbanes.haze.blur.HazeBlurStyle
-import dev.chrisbanes.haze.blur.HazeColorEffect
-import dev.chrisbanes.haze.blur.materials.HazeMaterials
+import com.maxrave.simpmusic.ui.noblur.BarStyle
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -730,35 +728,19 @@ fun rememberPaletteColor(
 }
 
 /**
- * The frosted top bar of the immersive screens: their own page colour behind a 24dp blur, washed
- * with that colour again at [tintAlpha]. Where haze does not blur (Android 11 and below), the bar is
- * that colour, opaque.
- *
- * Blur is left at haze's default (Android 12+ and Desktop) on purpose. Forcing it on sends older
- * Android through haze's RenderScript blur, which crashes natively (SIGSEGV in
- * `GrallocConsumer::lockNextBuffer`) while one blurred screen replaces another, Library into the
- * four tiles screen above all. A native crash leaves haze no chance to fall back.
- *
- * A plain function, not remembered: `HazeBlurStyle { }` records its writes into a list and compares
- * by them, so an unchanged tint recomposes into an equal Style and leaves the node alone.
+ * The top bar of the immersive screens. Lite fork: no blur, so the bar is its own page colour,
+ * opaque (what upstream draws where blur is unavailable). [tintAlpha] is kept only so call sites
+ * stay identical to upstream.
  */
+@Suppress("UNUSED_PARAMETER")
 fun barBlurStyle(
     tint: Color,
     tintAlpha: Float,
-): HazeBlurStyle =
-    HazeBlurStyle {
-        blurRadius(24.dp)
-        backgroundColor(tint)
-        colorEffects(listOf(HazeColorEffect.tint(tint.copy(alpha = tintAlpha))))
-        fallbackColorEffect(HazeColorEffect.tint(tint.copy(alpha = 1f)))
-    }
+): BarStyle = BarStyle(tint.copy(alpha = 1f))
 
-/** [HazeMaterials.ultraThin] for the plain top bars, with the same opaque fallback as [barBlurStyle]. */
+/** The plain top bars: the theme surface colour, opaque. */
 @Composable
-fun ultraThinBarStyle(): HazeBlurStyle {
-    val surface = MaterialTheme.colorScheme.surface
-    return HazeMaterials.ultraThin(surface).then { fallbackColorEffect(HazeColorEffect.tint(surface)) }
-}
+fun ultraThinBarStyle(): BarStyle = BarStyle(MaterialTheme.colorScheme.surface)
 
 /**
  * Vertical scrim from [from] to [to] that fades without showing an edge.

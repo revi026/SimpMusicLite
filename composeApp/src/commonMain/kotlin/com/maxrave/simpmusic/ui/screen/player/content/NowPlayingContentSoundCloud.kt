@@ -55,7 +55,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
+import com.maxrave.simpmusic.ui.noblur.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
@@ -330,13 +330,8 @@ private fun NowPlayingSoundCloudLayout(
     val pausedProgress = animateFloatAsState(if (paused) 1f else 0f, tween(PAUSE_FADE_MS), label = "soundCloudPaused")
     val waveformFold = animateFloatAsState(if (paused && !scrubbing) 1f else 0f, tween(PAUSE_FADE_MS), label = "soundCloudFold")
     val stripAlpha = { 1f - pausedProgress.value }
-    val pausedBlur =
-        remember(pausedProgress) {
-            Modifier.graphicsLayer {
-                val radius = PAUSED_BLUR.toPx() * pausedProgress.value
-                renderEffect = if (radius > 0f) BlurEffect(radius, radius, TileMode.Clamp) else null
-            }
-        }
+    // Lite fork: no blur while paused.
+    val pausedBlur = Modifier
     // The lower block's height, which places the lyric line for the blur and the scrim under it.
     val lowerBlockHeight = remember { mutableIntStateOf(0) }
     // Remembered, so the shell's recompositions (one per position report) do not redraw the artwork,

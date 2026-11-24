@@ -61,7 +61,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
+import com.maxrave.simpmusic.ui.noblur.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
@@ -149,10 +149,10 @@ import com.maxrave.simpmusic.viewModel.ArtistScreenState
 import com.maxrave.simpmusic.viewModel.ArtistViewModel
 import com.maxrave.simpmusic.viewModel.SharedViewModel
 import com.maxrave.simpmusic.viewModel.SongSelectionViewModel
-import dev.chrisbanes.haze.HazeInput
-import dev.chrisbanes.haze.blur.hazeBlur
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import com.maxrave.simpmusic.ui.noblur.HazeInput
+import com.maxrave.simpmusic.ui.noblur.hazeBlur
+import com.maxrave.simpmusic.ui.noblur.hazeSource
+import com.maxrave.simpmusic.ui.noblur.rememberHazeState
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
@@ -404,45 +404,6 @@ fun ArtistScreen(
                                                         .fillMaxSize()
                                                         .graphicsLayer { alpha = artworkAlpha },
                                             )
-                                            // The artwork's bottom 200dp melts into the page through a
-                                            // Modifier.blur copy of it, faded in by a DstIn gradient. At
-                                            // the top of the ramp the copy is fully transparent, so there
-                                            // is no seam — haze's HazeProgressive drew a visible line
-                                            // there on Android (and crashes on skiko). Below Android 12
-                                            // blur is a no-op and the copy is pixel-identical to the
-                                            // artwork, leaving just the colour scrim. Fades with the
-                                            // artwork, and is dropped once the video has taken over.
-                                            if (artworkAlpha > 0f) {
-                                                AsyncImage(
-                                                    model =
-                                                        ImageRequest
-                                                            .Builder(LocalPlatformContext.current)
-                                                            .data(headerImageUrl)
-                                                            .crossfade(550)
-                                                            .build(),
-                                                    contentDescription = null,
-                                                    contentScale =
-                                                        if (isPortrait) ContentScale.FillWidth else ContentScale.Crop,
-                                                    modifier =
-                                                        Modifier
-                                                            .fillMaxSize()
-                                                            .graphicsLayer {
-                                                                compositingStrategy = CompositingStrategy.Offscreen
-                                                                alpha = artworkAlpha
-                                                            }.drawWithContent {
-                                                                drawContent()
-                                                                drawRect(
-                                                                    brush =
-                                                                        Brush.verticalGradient(
-                                                                            colors = listOf(Color.Transparent, Color.Black),
-                                                                            startY = size.height - 200.dp.toPx(),
-                                                                            endY = size.height,
-                                                                        ),
-                                                                    blendMode = BlendMode.DstIn,
-                                                                )
-                                                            }.blur(32.dp),
-                                                )
-                                            }
                                         } // end media layer
                                         // 5% black over the artwork/video, under the fade and scrim, so
                                         // a bright photo sits back a little behind the title.

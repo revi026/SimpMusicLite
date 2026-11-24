@@ -81,28 +81,12 @@ fun Modifier.liquidGlass(
     interactive: Boolean = true,
     highlight: Highlight = Highlight.Default,
 ): Modifier {
-    // With the setting off, every glass surface falls back to the flat translucent pill the detail
-    // screens used before the migration (surfaceContainerHighest @ 80%) — shape and hit target
-    // unchanged, only the draw. Gated HERE, at the shared primitive, because none of the ~15 call
-    // sites across Album/Playlist/Artist/LocalPlaylist/Analytics ever read the setting themselves:
-    // the flag used to reach only the nav bar and the MiniPlayer, which branch before composing
-    // glass at all. Desktop never takes this path — AppTheme provides true there unconditionally.
-    if (!LocalLiquidGlassEnabled.current) {
-        return this
-            .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.8f))
-    }
-    val isDark = LocalIsDarkTheme.current
-    val interaction = rememberGlassInteraction()
-    return this.drawInteractiveGlass(
-        isDark = isDark,
-        backdrop = backdrop,
-        layer = null,
-        luminance = { 0.5f },
-        shape = shape,
-        interaction = if (interactive) interaction else null,
-        highlight = highlight,
-    )
+    // Lite fork: glass is gone everywhere. Every surface is the flat translucent pill the detail
+    // screens used before the glass migration (surfaceContainerHighest @ 80%): same shape and hit
+    // target, only the draw. Gated HERE, at the shared primitive, so no call site changes.
+    return this
+        .clip(shape)
+        .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.8f))
 }
 
 /**
@@ -127,22 +111,9 @@ fun Modifier.liquidGlass(
     minScrim: Float = 0.12f,
     maxScrim: Float = 0.5f,
 ): Modifier {
-    val isDark = LocalIsDarkTheme.current
-    val interaction = rememberGlassInteraction()
-    return this.drawInteractiveGlass(
-        isDark = isDark,
-        backdrop = backdrop,
-        layer = layer,
-        luminance = { luminance.value },
-        shape = shape,
-        interaction = if (interactive) interaction else null,
-        // MiniPlayer (the only caller of this layer + luminance overload) is a wide surface, so the
-        // shared 1.12 press scale bulges too hard; use a gentler scale here.
-        pressedScale = 1.04f,
-        blurScale = blurScale,
-        minScrim = minScrim,
-        maxScrim = maxScrim,
-    )
+    return this
+        .clip(shape)
+        .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.9f))
 }
 
 /**

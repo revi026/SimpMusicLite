@@ -169,10 +169,10 @@ import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.m3.libraryColors
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
-import dev.chrisbanes.haze.HazeInput
-import dev.chrisbanes.haze.blur.hazeBlur
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import com.maxrave.simpmusic.ui.noblur.HazeInput
+import com.maxrave.simpmusic.ui.noblur.hazeBlur
+import com.maxrave.simpmusic.ui.noblur.hazeSource
+import com.maxrave.simpmusic.ui.noblur.rememberHazeState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -1063,12 +1063,6 @@ fun SettingScreen(
                                 onClick = { showColorPickerDialog = true },
                             )
                         }
-                        SettingItem(
-                            title = stringResource(Res.string.enable_liquid_glass_effect),
-                            subtitle = stringResource(Res.string.enable_liquid_glass_effect_description),
-                            smallSubtitle = true,
-                            switch = (enableLiquidGlass to { viewModel.setEnableLiquidGlass(it) }),
-                        )
                         SettingItem(
                             title = stringResource(Res.string.scroll_long_text),
                             subtitle = stringResource(Res.string.scroll_long_text_description),
