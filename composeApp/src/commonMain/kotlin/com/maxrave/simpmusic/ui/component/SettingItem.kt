@@ -157,6 +157,8 @@ fun SettingItem(
 fun SettingGroup(
     title: String,
     modifier: Modifier = Modifier,
+    // Lite fork: false where the page's own title already says it (a section with this one group).
+    showHeader: Boolean = true,
     footer: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -170,12 +172,14 @@ fun SettingGroup(
             contents =
                 listOf(
                     {
-                        Text(
-                            text = title.toUpperCase(Locale.current),
-                            // The headers' size from before the groups; only the weight drops, so they step back.
-                            style = typo().labelMedium.copy(fontWeight = FontWeight.Normal),
-                            modifier = Modifier.padding(start = SettingRowPaddingHorizontal, end = SettingRowPaddingHorizontal, bottom = 8.dp),
-                        )
+                        if (showHeader) {
+                            Text(
+                                text = title.toUpperCase(Locale.current),
+                                // The headers' size from before the groups; only the weight drops, so they step back.
+                                style = typo().labelMedium.copy(fontWeight = FontWeight.Normal),
+                                modifier = Modifier.padding(start = SettingRowPaddingHorizontal, end = SettingRowPaddingHorizontal, bottom = 8.dp),
+                            )
+                        }
                     },
                     {
                         Column(

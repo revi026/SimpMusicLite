@@ -1174,4 +1174,7 @@
     <string name="settings_hub_playback">Playback &amp; audio</string>
     <string name="settings_hub_data">Data &amp; storage</string>
     <string name="settings_hub_about">About &amp; developer</string>
+    <string name="translate_lyrics_with_ai">Translate lyrics with AI</string>
+    <string name="ai_translate_needs_key">Add your AI API key in Settings → Accounts &amp; services → AI first</string>
+    <string name="ai_translating">Translating lyrics with AI…</string>
 </resources>

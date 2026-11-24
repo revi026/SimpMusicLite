@@ -847,7 +847,7 @@ fun SettingScreen(
                             onClick = { showLibrarySyncDialog = true },
                         )
                     }
-                    if (inSection("user_interface")) SettingGroup(title = stringResource(Res.string.user_interface)) {
+                    if (inSection("user_interface")) SettingGroup(title = stringResource(Res.string.user_interface), showHeader = searching) {
                         val themeModeLabels =
                             listOf(
                                 DataStoreManager.THEME_MODE_SYSTEM to stringResource(Res.string.theme_mode_system),
@@ -1069,7 +1069,7 @@ fun SettingScreen(
                 }
             }
             if (inSection("content")) item(key = "content") {
-                SettingGroup(title = stringResource(Res.string.content)) {
+                SettingGroup(title = stringResource(Res.string.content), showHeader = searching) {
                     SettingItem(
                         title = stringResource(Res.string.youtube_account),
                         subtitle = stringResource(Res.string.manage_your_youtube_accounts),
@@ -1821,7 +1821,7 @@ fun SettingScreen(
                 }
             }
             if (inSection("lyrics")) item(key = "lyrics") {
-                SettingGroup(title = stringResource(Res.string.lyrics)) {
+                SettingGroup(title = stringResource(Res.string.lyrics), showHeader = searching) {
                     SettingItem(
                         title = stringResource(Res.string.main_lyrics_provider),
                         subtitle =
@@ -3869,7 +3869,7 @@ private val settingSections: List<SettingsSectionDef> =
 /** The first thing Settings shows: one row per section, so nothing is more than two taps away. */
 @Composable
 private fun SettingsHub(onSelect: (String) -> Unit) {
-    SettingGroup(title = stringResource(Res.string.settings)) {
+    SettingGroup(title = stringResource(Res.string.settings), showHeader = false) {
         settingSections.forEachIndexed { index, def ->
             if (index > 0) {
                 HorizontalDivider(

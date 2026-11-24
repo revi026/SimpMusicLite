@@ -835,6 +835,7 @@ fun NowPlayingScreenContent(
                     ?.let { song ->
                         { addLyricsFor = arrayListOf(song.videoId, song.title, song.artistName?.joinToString(", ").orEmpty()) }
                     },
+            onTranslateWithAi = screenDataState.lyricsData?.let { { sharedViewModel.translateLyricsWithAI() } },
             onDeleteLyrics = screenDataState.lyricsData?.let { shown -> { sharedViewModel.deleteLyrics(shown) } },
             youTubeDislike =
                 when {

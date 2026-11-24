@@ -113,6 +113,8 @@ import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import org.simpmusic.lastfm.completeLogin
 import simpmusic.composeapp.generated.resources.Res
+import simpmusic.composeapp.generated.resources.ai_translate_needs_key
+import simpmusic.composeapp.generated.resources.ai_translating
 import simpmusic.composeapp.generated.resources.added_local_playlist
 import simpmusic.composeapp.generated.resources.added_to_queue
 import simpmusic.composeapp.generated.resources.added_to_youtube_liked
@@ -1945,6 +1947,25 @@ class SharedViewModel(
                     )
                 }
             }
+        }
+    }
+
+    /**
+     * Song menu "Translate lyrics with AI". Turns AI translation on, so the next songs are translated
+     * too, and translates the lyrics on screen now. Needs the API key from Settings, which is checked
+     * first: with no key nothing is switched on and nothing is requested.
+     */
+    fun translateLyricsWithAI() {
+        viewModelScope.launch {
+            if (dataStoreManager.aiApiKey.first().isBlank()) {
+                makeToast(getString(Res.string.ai_translate_needs_key))
+                return@launch
+            }
+            val videoId = _nowPlayingState.value?.songEntity?.videoId ?: return@launch
+            val shown = _nowPlayingScreenData.value.lyricsData?.takeIf { it.videoId == videoId } ?: return@launch
+            dataStoreManager.setUseAITranslation(true)
+            makeToast(getString(Res.string.ai_translating))
+            getAITranslationLyrics(videoId, shown.lyrics)
         }
     }
 

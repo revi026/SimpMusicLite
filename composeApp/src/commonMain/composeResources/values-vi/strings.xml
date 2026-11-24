@@ -1063,4 +1063,7 @@
     <string name="search_ai_models">Tìm mô hình</string>
     <string name="other_ai_model">Khác…</string>
     <string name="ai_model_list_unavailable">Không thể tải danh sách mô hình từ %1$s.</string>
+    <string name="translate_lyrics_with_ai">Dịch lời bài hát bằng AI</string>
+    <string name="ai_translate_needs_key">Hãy nhập khóa API AI trong Cài đặt → Tài khoản &amp; dịch vụ → AI trước</string>
+    <string name="ai_translating">Đang dịch lời bài hát bằng AI…</string>
 </resources>

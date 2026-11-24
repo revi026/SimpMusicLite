@@ -190,6 +190,7 @@ import com.maxrave.simpmusic.ui.icon.Search
 import com.maxrave.simpmusic.ui.icon.Sensors
 import com.maxrave.simpmusic.ui.icon.Share
 import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.TipsAndUpdates
 import com.maxrave.simpmusic.ui.icon.Speed
 import com.maxrave.simpmusic.ui.icon.Sync
 import com.maxrave.simpmusic.ui.icon.SyncDisabled
@@ -223,6 +224,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import simpmusic.composeapp.generated.resources.Res
 import simpmusic.composeapp.generated.resources.add_lyrics
+import simpmusic.composeapp.generated.resources.translate_lyrics_with_ai
 import simpmusic.composeapp.generated.resources.add_to_a_playlist
 import simpmusic.composeapp.generated.resources.add_to_queue
 import simpmusic.composeapp.generated.resources.add_to_queue_disabled_endless
@@ -1401,6 +1403,8 @@ fun NowPlayingBottomSheet(
     onAddLyrics: (() -> Unit)? = null,
     /** Set while lyrics are on screen: adds Delete lyrics in the same place, behind a confirm. */
     onDeleteLyrics: (() -> Unit)? = null,
+    /** Set while lyrics are on screen: adds Translate lyrics with AI, which also turns AI translation on. */
+    onTranslateWithAi: (() -> Unit)? = null,
     /** Set when opened from a queue row: adds that row's move and delete actions at the top. */
     queuePosition: QueuePosition? = null,
     /**
@@ -1883,6 +1887,15 @@ fun NowPlayingBottomSheet(
                         ) {
                             hideModalBottomSheet()
                             onAddLyrics()
+                        }
+                    }
+                    if (onTranslateWithAi != null) {
+                        ActionButton(
+                            icon = SimpIcons.TipsAndUpdates,
+                            text = Res.string.translate_lyrics_with_ai,
+                        ) {
+                            hideModalBottomSheet()
+                            onTranslateWithAi()
                         }
                     }
                     if (onDeleteLyrics != null) {
