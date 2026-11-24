@@ -95,9 +95,6 @@ import com.maxrave.simpmusic.ui.navigation.destination.list.ArtistDestination
 import com.maxrave.simpmusic.ui.navigation.destination.login.LoginDestination
 import com.maxrave.simpmusic.ui.navigation.destination.player.FullscreenDestination
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentActions
-import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentAppleMusic
-import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentSoundCloud
-import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentM3Expressive
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentSpotify
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentState
 import com.maxrave.simpmusic.ui.screen.player.content.PlayerBackdropColor
@@ -974,29 +971,9 @@ fun NowPlayingScreenContent(
         )
     }
 
-    when (nowPlayingStyle) {
-        DataStoreManager.NOW_PLAYING_STYLE_M3_EXPRESSIVE ->
-            NowPlayingContentM3Expressive(
-                state = state,
-                actions = actions,
-            )
-
-        DataStoreManager.NOW_PLAYING_STYLE_APPLE_MUSIC ->
-            NowPlayingContentAppleMusic(
-                state = state,
-                actions = actions,
-            )
-
-        DataStoreManager.NOW_PLAYING_STYLE_SOUNDCLOUD ->
-            NowPlayingContentSoundCloud(
-                state = state,
-                actions = actions,
-            )
-
-        else ->
-            NowPlayingContentSpotify(
-                state = state,
-                actions = actions,
-            )
-    }
+    // Lite fork: Classic is the only Now Playing style; the others are removed.
+    NowPlayingContentSpotify(
+        state = state,
+        actions = actions,
+    )
 }
