@@ -787,6 +787,7 @@ fun FullscreenLyricsContent(
             song = null,
             setSleepTimerEnable = true,
             changeMainLyricsProviderEnable = true,
+            onTranslateWithAi = screenDataState.lyricsData?.let { { sharedViewModel.translateLyricsWithAI() } },
             onDeleteLyrics = screenDataState.lyricsData?.let { shown -> { sharedViewModel.deleteLyrics(shown) } },
         )
     }

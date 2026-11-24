@@ -776,6 +776,7 @@ fun FullscreenPlayer(
                         } else {
                             null
                         },
+                    onTranslateWithAi = nowPlayingState.lyricsData?.let { { sharedViewModel.translateLyricsWithAI() } },
                     onDeleteLyrics = nowPlayingState.lyricsData?.let { shown -> { sharedViewModel.deleteLyrics(shown) } },
                 )
             }
