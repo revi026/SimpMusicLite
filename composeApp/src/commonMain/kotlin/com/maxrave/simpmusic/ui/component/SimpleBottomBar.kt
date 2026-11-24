@@ -40,10 +40,13 @@ fun SimpleBottomBar(
                 backStackEntry?.destination?.hierarchy?.any {
                     it.hasRoute(screen.destination::class)
                 } == true
+            // On the tab's own root screen, tapping it reloads; on a screen inside the tab (Settings
+            // under Home, say) it goes back to the root.
+            val atRoot = backStackEntry?.destination?.hasRoute(screen.destination::class) == true
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    if (selected) {
+                    if (atRoot) {
                         reloadDestinationIfNeeded(screen.destination::class)
                     } else {
                         navController.navigate(screen.destination) {
