@@ -219,11 +219,10 @@ fun MiniPlayer(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        label = "",
-    )
+    // Lite fork: no spring. The default progress spring is re-aimed on every 100 ms tick and so never settles,
+    // which kept the whole window redrawing (about 16 frames a second on the target phone, even while Now
+    // Playing covered this card). Progress moves in whole seconds instead, a step of about a pixel.
+    val animatedProgress = progress
 
     val offsetX = remember { Animatable(initialValue = 0f) }
     val offsetY = remember { Animatable(0f) }
@@ -255,7 +254,7 @@ fun MiniPlayer(
                     loading = timeline.loading
                     val prog =
                         if (timeline.total > 0L && timeline.current >= 0L) {
-                            timeline.current.toFloat() / timeline.total
+                            (timeline.current / 1000L * 1000L).toFloat() / timeline.total
                         } else {
                             0f
                         }

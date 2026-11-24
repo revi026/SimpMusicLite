@@ -501,9 +501,11 @@ fun NowPlayingScreenContent(
     LaunchedEffect(key1 = isSliding) {
         snapshotFlow { timelineSource.value }.collect { timeline ->
             if (!isSliding) {
+                // Whole seconds: the readout only changes once a second, and a slider redrawn on every 100 ms
+                // tick for a sub-pixel move is a full-window frame the target phone's GPU cannot spare.
                 sliderValue =
                     if (timeline.total > 0L) {
-                        timeline.current.toFloat() * 100 / timeline.total.toFloat()
+                        (timeline.current / 1000L * 1000L).toFloat() * 100 / timeline.total.toFloat()
                     } else {
                         0f
                     }

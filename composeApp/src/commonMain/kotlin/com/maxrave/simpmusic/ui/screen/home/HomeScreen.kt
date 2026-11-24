@@ -153,9 +153,7 @@ import com.maxrave.simpmusic.ui.component.OfflineErrorState
 import com.maxrave.simpmusic.ui.component.PromoBanner
 import com.maxrave.simpmusic.ui.component.PromoBannerData
 import com.maxrave.simpmusic.ui.component.QuickPicksItem
-import com.maxrave.simpmusic.ui.component.ReviewDialog
 import com.maxrave.simpmusic.ui.component.SectionHeaderButton
-import com.maxrave.simpmusic.ui.component.ShareSavedLyricsDialog
 import com.maxrave.simpmusic.ui.component.homeCardAspectRatio
 import com.maxrave.simpmusic.ui.component.rememberHolderPainter
 import com.maxrave.simpmusic.ui.icon.Notifications
@@ -369,12 +367,6 @@ fun HomeScreen(
         }
     }
 
-    var showReviewDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var showRequestShareLyricsPermissions by rememberSaveable {
-        mutableStateOf(false)
-    }
     // Decided once per launch (saveable, so a rotation does not count as a new launch).
     var promoLaunchDecided by rememberSaveable {
         mutableStateOf(false)
@@ -441,18 +433,7 @@ fun HomeScreen(
             }
         }
     }
-    LaunchedEffect(openAppTime, shareLyricsPermissions) {
-        Logger.w("HomeScreen", "openAppTime: $openAppTime, shareLyricsPermissions: $shareLyricsPermissions")
-        if (openAppTime >= 10 && openAppTime % 10 == 0 && openAppTime <= 50) {
-            showReviewDialog = true
-        } else if ((openAppTime == 1 || openAppTime % 15 == 0) && openAppTime <= 60 && !shareLyricsPermissions) {
-            showRequestShareLyricsPermissions = true
-        } else {
-            // Lite fork: the blog and kotlin-footguns promos are gone.
-            showReviewDialog = false
-            showRequestShareLyricsPermissions = false
-        }
-    }
+    // Lite fork: no review, blog, star or share-lyrics prompts on any app-open milestone.
 
     val shouldStartPaginate =
         remember {
@@ -486,41 +467,8 @@ fun HomeScreen(
 //        )
 //    }
 
-    if (showReviewDialog) {
-        ReviewDialog(
-            onDismissRequest = {
-                sharedViewModel.onDoneReview(
-                    isDismissOnly = true,
-                )
-                showReviewDialog = false
-            },
-            onDoneReview = {
-                sharedViewModel.onDoneReview(
-                    isDismissOnly = false,
-                )
-                showReviewDialog = false
-            },
-        )
-    }
-
-    if (showRequestShareLyricsPermissions) {
-        ShareSavedLyricsDialog(
-            onDismissRequest = {
-                showRequestShareLyricsPermissions = false
-                sharedViewModel.onDoneReview(
-                    isDismissOnly = true,
-                )
-            },
-            onConfirm = { contributor ->
-                sharedViewModel.onDoneRequestingShareLyrics(
-                    contributor,
-                )
-            },
-        )
-    }
-
     val otherDialogOpen =
-        appDialogOpen || showReviewDialog || showRequestShareLyricsPermissions
+        appDialogOpen
     // The launch banner, decided once per launch. It waits for Home to settle on its own dialogs (the
     // open count and the lyrics-sharing flag load just after the first frame) and for the update check
     // started at launch, however long that takes, so an update dialog comes first. Then it takes the
