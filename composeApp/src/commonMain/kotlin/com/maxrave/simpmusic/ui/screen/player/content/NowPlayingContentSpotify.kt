@@ -109,6 +109,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kmpalette.rememberPaletteState
 import com.maxrave.common.Config.MAIN_PLAYER
+import com.maxrave.domain.data.model.streams.TimeLine
 import com.maxrave.domain.mediaservice.handler.RepeatState
 import com.maxrave.simpmusic.Platform
 import com.maxrave.simpmusic.expect.ui.MediaPlayerView
@@ -212,6 +213,13 @@ fun NowPlayingContentSpotify(
 ) {
     // The timeline ticks every 100 ms; only whether it is still loading matters here.
     val timelineLoading by remember(state) { derivedStateOf { state.timelineState.loading } }
+    // Read when drawing the thin progress line: a bare `state.timelineState` there invalidated the draw on every tick.
+    val positionFraction by remember(state) {
+        derivedStateOf {
+            val timeline = state.timelineState
+            if (timeline.total > 0L) (timeline.current / 1000L * 1000L).toFloat() / timeline.total else 0f
+        }
+    }
     val screenInfo = getScreenSizeInfo()
 
     val localDensity = LocalDensity.current
@@ -1775,7 +1783,7 @@ fun NowPlayingContentSpotify(
                                 .align(Alignment.BottomCenter),
                     ) {
                         LinearProgressIndicator(
-                            progress = { state.timelineState.current.toFloat() / state.timelineState.total },
+                            progress = { positionFraction },
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
@@ -1978,6 +1986,16 @@ internal fun ColumnScope.SpotifyPlaybackControls(
     // recompose the labels and the transport with it.
     val timelineLoading by remember(state) { derivedStateOf { state.timelineState.loading } }
     val timelineCrossfading by remember(state) { derivedStateOf { state.timelineState.isCrossfading } }
+    // The buffered bar and the two labels are read through derived values: the timeline object changes every
+    // 100 ms, but what they show changes far less often, and each tick that reached them redrew the window.
+    val bufferedFraction by remember(state) { derivedStateOf { state.timelineState.bufferedPercent.toFloat() / 100 } }
+    // The label helpers are composable, so they cannot run inside derivedStateOf: they get a snapshot that
+    // only differs when the length or the live flag does.
+    val labelTimeline by remember(state) {
+        derivedStateOf {
+            state.timelineState.let { TimeLine(current = 0L, total = it.total, bufferedPercent = 0, loading = false, isLive = it.isLive) }
+        }
+    }
     // Real Slider
     Box(
         Modifier
@@ -2014,7 +2032,7 @@ internal fun ColumnScope.SpotifyPlaybackControls(
                 } else {
                     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                         LinearProgressIndicator(
-                            progress = { state.timelineState.bufferedPercent.toFloat() / 100 },
+                            progress = { bufferedFraction },
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
@@ -2112,7 +2130,7 @@ internal fun ColumnScope.SpotifyPlaybackControls(
             .padding(horizontal = 20.dp),
     ) {
         Text(
-            text = state.timelineState.elapsedLabel(state.sliderValue / 100f),
+            text = labelTimeline.elapsedLabel(state.sliderValue / 100f),
             style = typo().bodyMedium,
             color = state.secondaryTextColor(),
             modifier = Modifier.weight(1f),
@@ -2165,7 +2183,7 @@ internal fun ColumnScope.SpotifyPlaybackControls(
             )
         }
         Text(
-            text = state.timelineState.lengthLabel(),
+            text = labelTimeline.lengthLabel(),
             style = typo().bodyMedium,
             color = state.secondaryTextColor(),
             modifier = Modifier.weight(1f),

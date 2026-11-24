@@ -53,6 +53,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import com.maxrave.domain.data.model.streams.TimeLine
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -172,7 +175,21 @@ fun FullscreenLyricsContent(
     val fullscreenAppleLyrics =
         fullscreenLyricsStyle == DataStoreManager.LYRICS_STYLE_APPLE_MUSIC && isLyricsBlurSupported()
     val screenDataState by sharedViewModel.nowPlayingScreenData.collectAsStateWithLifecycle()
-    val timelineState by sharedViewModel.timeline.collectAsStateWithLifecycle()
+    // Lite fork: the position changes every 100 ms. The parts of this sheet that show it read it through narrow
+    // derived values below, so a tick no longer recomposes the whole sheet; [timelineState] is left for the few
+    // places that really want the raw position.
+    val timelineSource = sharedViewModel.timeline.collectAsStateWithLifecycle()
+    val timelineState by timelineSource
+    val timelineLoading by remember { derivedStateOf { timelineSource.value.loading } }
+    val timelineCrossfading by remember { derivedStateOf { timelineSource.value.isCrossfading } }
+    val timelineBuffered by remember { derivedStateOf { timelineSource.value.bufferedPercent.toFloat() / 100 } }
+    val timelineElapsedSecond by remember { derivedStateOf { timelineSource.value.current / 1000L } }
+    val timelineIsLive by remember { derivedStateOf { timelineSource.value.isLive } }
+    val labelTimeline by remember {
+        derivedStateOf {
+            timelineSource.value.let { TimeLine(current = 0L, total = it.total, bufferedPercent = 0, loading = false, isLive = it.isLive) }
+        }
+    }
     // Same correction LyricsView applies to the sheet itself, so the line the share picker opens on
     // is the line the listener is actually hearing.
     val fullscreenLyricsOffsetMs by sharedViewModel.getLyricsOffsetMs().collectAsStateWithLifecycle(0)
@@ -204,13 +221,16 @@ fun FullscreenLyricsContent(
         }
     }
 
-    LaunchedEffect(key1 = timelineState) {
-        sliderValue =
-            if (timelineState.total > 0L) {
-                timelineState.current.toFloat() * 100 / timelineState.total.toFloat()
-            } else {
-                0f
-            }
+    LaunchedEffect(Unit) {
+        snapshotFlow { timelineSource.value }.collect { timeline ->
+            // Whole seconds: the readout changes once a second, and a bar redrawn on every tick is a full-window frame.
+            sliderValue =
+                if (timeline.total > 0L) {
+                    (timeline.current / 1000L * 1000L).toFloat() * 100 / timeline.total.toFloat()
+                } else {
+                    0f
+                }
+        }
     }
 
     if (screenDataState.lyricsData != null) {
@@ -298,7 +318,7 @@ fun FullscreenLyricsContent(
             )
             val rainbowColor = hsvToColor(rainbowHue, 1f, 1f)
             val sliderTrackColor by animateColorAsState(
-                targetValue = if (timelineState.isCrossfading) rainbowColor else Color.White,
+                targetValue = if (timelineCrossfading) rainbowColor else Color.White,
                 animationSpec = tween(300),
                 label = "sliderCrossfadeColor",
             )
@@ -520,7 +540,7 @@ fun FullscreenLyricsContent(
                                             .height(24.dp),
                                     contentAlignment = Alignment.Center,
                                 ) {
-                                    Crossfade(timelineState.loading) {
+                                    Crossfade(timelineLoading) {
                                         if (it) {
                                             CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                                                 LinearProgressIndicator(
@@ -541,7 +561,7 @@ fun FullscreenLyricsContent(
                                         } else {
                                             CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                                                 LinearProgressIndicator(
-                                                    progress = { timelineState.bufferedPercent.toFloat() / 100 },
+                                                    progress = { timelineBuffered },
                                                     modifier =
                                                         Modifier
                                                             .fillMaxWidth()
@@ -631,7 +651,7 @@ fun FullscreenLyricsContent(
                                             .padding(horizontal = 40.dp),
                                     ) {
                                         Text(
-                                            text = if (timelineState.isLive) "" else formatDuration(timelineState.current),
+                                            text = if (timelineIsLive) "" else formatDuration(timelineElapsedSecond * 1000L),
                                             style = typo().bodyMedium,
                                             modifier = Modifier.weight(1f),
                                             textAlign = TextAlign.Left,
@@ -639,7 +659,7 @@ fun FullscreenLyricsContent(
                                         AnimatedVisibility(
                                             enter = fadeIn(),
                                             exit = fadeOut(),
-                                            visible = timelineState.isCrossfading,
+                                            visible = timelineCrossfading,
                                         ) {
                                             Text(
                                                 text = stringResource(Res.string.crossfading),
@@ -649,7 +669,7 @@ fun FullscreenLyricsContent(
                                             )
                                         }
                                         Text(
-                                            text = timelineState.lengthLabel(),
+                                            text = labelTimeline.lengthLabel(),
                                             style = typo().bodyMedium,
                                             modifier = Modifier.weight(1f),
                                             textAlign = TextAlign.Right,
