@@ -173,7 +173,8 @@ fun App(
     val titleMarquee by viewModel.getTitleMarquee().collectAsStateWithLifecycle(true)
     // Analytics only makes sense with local tracking on, so its tab follows that setting.
     val isLocalTrackingEnabled by viewModel.getLocalTrackingEnabled().collectAsStateWithLifecycle(DataStoreManager.FALSE)
-    val showAnalyticsTab = isLocalTrackingEnabled == TRUE
+    // Lite fork: the Analytics screen is removed, so no tab ever points at it.
+    val showAnalyticsTab = false
     // Mix for you comes from the signed-in YouTube account, so its tab follows the session — the
     // same condition that used to hide the chip inside Library.
     val isYouTubeLoggedIn by viewModel.getYouTubeLoggedIn().collectAsStateWithLifecycle(DataStoreManager.FALSE)

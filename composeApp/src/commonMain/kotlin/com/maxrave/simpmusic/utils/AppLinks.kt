@@ -24,9 +24,11 @@ fun isAppLinkAvailable(
 ): Boolean =
     when {
         appPath !in APP_LINK_PATHS -> false
-        appPath == "analytics" || appPath == "taste" -> localTrackingOn
+        // Lite fork: the Analytics and Wrapped screens are removed.
+        appPath == "analytics" -> false
+        appPath == "taste" -> localTrackingOn
         appPath == "recognize" -> getPlatform() == Platform.Android
-        appPath == "library" && libraryTab == LibraryChipType.WRAPPED -> localTrackingOn
+        appPath == "library" && libraryTab == LibraryChipType.WRAPPED -> false
         appPath == "library" && libraryTab == LibraryChipType.YOUTUBE_MUSIC_PLAYLIST -> youTubeLoggedIn
         else -> true
     }

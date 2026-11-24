@@ -13,8 +13,6 @@ import com.maxrave.simpmusic.ui.navigation.destination.home.MoodDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.NotificationDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.RadioBuilderDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.SettingsDestination
-import com.maxrave.simpmusic.ui.screen.home.ListenTogetherScreen
-import com.maxrave.simpmusic.ui.screen.home.ListenTogetherSettingsScreen
 import com.maxrave.simpmusic.ui.screen.home.MoodScreen
 import com.maxrave.simpmusic.ui.screen.home.NotificationScreen
 import com.maxrave.simpmusic.ui.screen.home.SettingScreen
@@ -45,20 +43,9 @@ fun NavGraphBuilder.homeScreenGraph(
             params = params,
         )
     }
-    composable<ListenTogetherDestination> {
-        ListenTogetherScreen(
-            navController = navController,
-            innerPadding = innerPadding,
-        )
-    }
+    // Lite fork: the Listen Together screens are not registered (see AppNavigationGraph).
     composable<RadioBuilderDestination> {
         RadioBuilderScreen(
-            navController = navController,
-            innerPadding = innerPadding,
-        )
-    }
-    composable<ListenTogetherSettingsDestination> {
-        ListenTogetherSettingsScreen(
             navController = navController,
             innerPadding = innerPadding,
         )
