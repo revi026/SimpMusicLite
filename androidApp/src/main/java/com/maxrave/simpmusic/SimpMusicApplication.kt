@@ -26,6 +26,7 @@ import com.maxrave.simpmusic.di.viewModelModule
 import com.maxrave.simpmusic.service.backup.AutoBackupScheduler
 import com.maxrave.simpmusic.service.sync.LibrarySyncScheduler
 import com.maxrave.simpmusic.utils.NetworkFirstInterceptor
+import com.maxrave.simpmusic.utils.ThumbnailDownscaleInterceptor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -135,6 +136,9 @@ class SimpMusicApplication :
             ImageLoader
                 .Builder(context)
                 .components {
+                    // Lite fork: ask the CDN for the size the picture is drawn at. Must stay BEFORE
+                    // NetworkFirstInterceptor, which keys its disk cache on the request it receives.
+                    add(ThumbnailDownscaleInterceptor())
                     add(NetworkFirstInterceptor { imageLoader })
                     add(
                         OkHttpNetworkFetcherFactory(
