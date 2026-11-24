@@ -79,6 +79,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -210,6 +211,8 @@ fun NowPlayingContentSpotify(
     actions: NowPlayingContentActions,
 ) {
     androidx.compose.runtime.SideEffect { com.maxrave.simpmusic.diag.Recomp.mark("NowPlayingContentSpotify") }
+    // The timeline ticks every 100 ms; only whether it is still loading matters here.
+    val timelineLoading by remember(state) { derivedStateOf { state.timelineState.loading } }
     val screenInfo = getScreenSizeInfo()
 
     val localDensity = LocalDensity.current
@@ -1750,7 +1753,7 @@ fun NowPlayingContentSpotify(
                             actions.onUIEvent(UIEvent.ToggleLike)
                         }
                         Spacer(modifier = Modifier.width(15.dp))
-                        Crossfade(targetState = state.timelineState.loading, label = "") {
+                        Crossfade(targetState = timelineLoading, label = "") {
                             if (it) {
                                 Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
                                     CircularProgressIndicator(
@@ -1973,6 +1976,10 @@ internal fun ColumnScope.SpotifyPlaybackControls(
     actions: NowPlayingContentActions,
     sliderModifier: Modifier = Modifier,
 ) = LeftToRight {
+    // Narrow reads: the slider below follows every tick, but these two change rarely and must not
+    // recompose the labels and the transport with it.
+    val timelineLoading by remember(state) { derivedStateOf { state.timelineState.loading } }
+    val timelineCrossfading by remember(state) { derivedStateOf { state.timelineState.isCrossfading } }
     // Real Slider
     Box(
         Modifier
@@ -1988,7 +1995,7 @@ internal fun ColumnScope.SpotifyPlaybackControls(
                     .height(24.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Crossfade(state.timelineState.loading) {
+            Crossfade(timelineLoading) {
                 if (it) {
                     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                         LinearProgressIndicator(
@@ -2131,7 +2138,7 @@ internal fun ColumnScope.SpotifyPlaybackControls(
         AnimatedVisibility(
             enter = fadeIn(),
             exit = fadeOut(),
-            visible = state.timelineState.isCrossfading,
+            visible = timelineCrossfading,
         ) {
             // Same effect as the desktop MiniPlayer label: a
             // highlight sweeping through the glyphs via a text

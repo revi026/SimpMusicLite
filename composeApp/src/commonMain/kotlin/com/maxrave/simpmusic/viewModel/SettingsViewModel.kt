@@ -43,6 +43,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.singleOrNull
@@ -209,6 +212,17 @@ class SettingsViewModel(
 
     private var _backupDownloaded: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val backupDownloaded: StateFlow<Boolean> = _backupDownloaded
+
+    /** Lite fork: word-by-word lyrics are heavy for a weak GPU, so they are off until the user asks. */
+    val wordByWordLyrics: StateFlow<Boolean> =
+        dataStoreManager
+            .getString(WORD_BY_WORD_LYRICS_KEY)
+            .map { it == "true" }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun setWordByWordLyrics(enabled: Boolean) {
+        viewModelScope.launch { dataStoreManager.putString(WORD_BY_WORD_LYRICS_KEY, enabled.toString()) }
+    }
 
     private var _enableLiquidGlass: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val enableLiquidGlass: StateFlow<Boolean> = _enableLiquidGlass

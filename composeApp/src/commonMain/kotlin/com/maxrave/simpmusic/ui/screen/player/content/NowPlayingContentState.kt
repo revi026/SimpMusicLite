@@ -5,6 +5,7 @@ import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -110,7 +111,7 @@ private fun Int.toKhzLabel(): String {
 class NowPlayingContentState(
     val screenData: NowPlayingScreenData,
     val controllerState: ControlState,
-    val timelineState: TimeLine,
+    private val timelineSource: State<TimeLine>,
     val timelineFlow: StateFlow<TimeLine>,
     val likeStatus: Boolean,
     val castState: GenericCastState,
@@ -124,8 +125,8 @@ class NowPlayingContentState(
     val spotShadowColor: Color,
     val gradientOffset: GradientOffset,
     val sliderTrackColor: Color,
-    val sliderValue: Float,
-    val currentLyricLineIndex: Int,
+    private val sliderValueSource: State<Float>,
+    private val currentLyricLineIndexSource: State<Int>,
     val showControlLayout: Boolean,
     val controlLayoutAlpha: Float,
     val showHideMiddleLayout: Boolean,
@@ -152,7 +153,13 @@ class NowPlayingContentState(
      * at startup is still being rebuilt: the same id the comments sheet uses.
      */
     val videoId: String? = null,
-)
+) {
+    // Lite fork: these change on every playback tick. They are read through State at the place that shows
+    // them, so a tick recomposes that widget instead of the whole player.
+    val timelineState: TimeLine get() = timelineSource.value
+    val sliderValue: Float get() = sliderValueSource.value
+    val currentLyricLineIndex: Int get() = currentLyricLineIndexSource.value
+}
 
 /**
  * Everything a Now Playing content layer can do. All callbacks land in the shell, which owns

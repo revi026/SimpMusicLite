@@ -173,7 +173,8 @@ fun Modifier.titleMarquee(
 ): Modifier =
     composed {
         if (LocalTitleMarquee.current) {
-            Modifier.basicMarquee(iterations, animationMode, repeatDelayMillis, initialDelayMillis, spacing, velocity)
+            // Lite fork: a low-frame-rate marquee that stops after two passes (see LowFpsMarquee.kt).
+            Modifier.lowFpsMarquee(iterations, repeatDelayMillis, initialDelayMillis, spacing, velocity)
         } else {
             Modifier
         }

@@ -91,13 +91,7 @@ class HomeViewModel(
     val homeBackground: StateFlow<String?> = _homeBackground
 
     init {
-        if (runBlocking { dataStoreManager.cookie.first() }.isEmpty() &&
-            runBlocking {
-                dataStoreManager.shouldShowLogInRequiredAlert.first() == TRUE
-            }
-        ) {
-            _showLogInAlert.update { true }
-        }
+        // Lite fork: the "log in to YouTube" warning is never raised.
         homeJob = Job()
         viewModelScope.launch {
             regionCodeChart.value = dataStoreManager.chartKey.first()

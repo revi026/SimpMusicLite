@@ -71,6 +71,7 @@ import com.maxrave.domain.utils.toSyncedLyrics
 import com.maxrave.domain.utils.toTrack
 import com.maxrave.logger.LogLevel
 import com.maxrave.logger.Logger
+import com.maxrave.simpmusic.ui.screen.player.content.stripRichSyncTimestamps
 import com.maxrave.simpmusic.Platform
 import com.maxrave.simpmusic.expect.getDownloadFolderPath
 import com.maxrave.simpmusic.expect.isOnUnmeteredNetwork
@@ -292,7 +293,13 @@ class SharedViewModel(
     private val _shareSavedLyrics: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val shareSavedLyrics: StateFlow<Boolean> get() = _shareSavedLyrics
 
+    // Declared ahead of the init block that fills it. Off until the user turns the Settings switch on.
+    private val wordByWordLyrics = MutableStateFlow(false)
+
     init {
+        viewModelScope.launch {
+            dataStoreManager.getString(WORD_BY_WORD_LYRICS_KEY).collect { wordByWordLyrics.value = it == "true" }
+        }
         // A custom OpenAI base URL saved without its trailing slash makes the AI client drop the last
         // path segment ("https://host/v1" is requested as "https://host/chat/completions"). Repaired once
         // here for values saved before the setter added the slash.
@@ -1412,6 +1419,21 @@ class SharedViewModel(
         mediaPlayerHandler.loadPlaylistOrAlbum(index)
     }
 
+    /**
+     * Lite fork: word-by-word (rich sync) lyrics redraw the screen on every frame while a line is sung, which a
+     * weak GPU cannot sustain. Unless the user turned them on, a rich-synced sheet is shown line by line. Only
+     * what is SHOWN changes: the cache and what is contributed keep the word timings.
+     */
+    private fun forDisplay(lyrics: Lyrics): Lyrics =
+        if (!wordByWordLyrics.value && lyrics.syncType == "RICH_SYNCED") {
+            lyrics.copy(
+                lines = lyrics.lines?.map { it.copy(words = it.words.stripRichSyncTimestamps(), syllables = null) },
+                syncType = "LINE_SYNCED",
+            )
+        } else {
+            lyrics
+        }
+
     private fun updateLyrics(
         videoId: String,
         duration: Int, // 0 if translated lyrics
@@ -1562,7 +1584,7 @@ class SharedViewModel(
                         it.copy(
                             lyricsData =
                                 it.lyricsData?.copy(
-                                    translatedLyrics = lyrics to lyricsProvider,
+                                    translatedLyrics = forDisplay(lyrics) to lyricsProvider,
                                 ),
                         )
                     }
@@ -1603,7 +1625,7 @@ class SharedViewModel(
                             lyricsData =
                                 NowPlayingScreenData.LyricsData(
                                     videoId = videoId,
-                                    lyrics = lyrics,
+                                    lyrics = forDisplay(lyrics),
                                     lyricsProvider = lyricsProvider,
                                 ),
                         )
@@ -2588,3 +2610,6 @@ sealed class VoteState {
  * of a track onwards.
  */
 private fun String.isCanvasVideoUrl(): Boolean = contains(".mp4") || contains(".m3u8")
+
+/** DataStore key of the "word-by-word lyrics" switch (off unless the string is "true"). */
+const val WORD_BY_WORD_LYRICS_KEY = "lite_word_by_word_lyrics"

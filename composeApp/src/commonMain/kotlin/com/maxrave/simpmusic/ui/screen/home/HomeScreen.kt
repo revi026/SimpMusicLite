@@ -133,14 +133,12 @@ import com.maxrave.simpmusic.extension.mouseDragScroll
 import com.maxrave.simpmusic.extension.rgbFactor
 import com.maxrave.simpmusic.extension.ultraThinBarStyle
 import com.maxrave.simpmusic.getPlatform
-import com.maxrave.simpmusic.ui.component.BlogPromoDialog
 import com.maxrave.simpmusic.ui.component.CenterLoadingBox
 import com.maxrave.simpmusic.ui.component.Chip
 import com.maxrave.simpmusic.ui.component.CreateActions
 import com.maxrave.simpmusic.ui.component.DropdownButton
 import com.maxrave.simpmusic.ui.component.EndOfPage
 import com.maxrave.simpmusic.ui.component.ExpandableChip
-import com.maxrave.simpmusic.ui.component.FootgunsStarDialog
 import com.maxrave.simpmusic.ui.component.HomeDiscoverSection
 import com.maxrave.simpmusic.ui.component.HomeItem
 import com.maxrave.simpmusic.ui.component.HomeItemContentPlaylist
@@ -180,7 +178,6 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.utils.VersionManager
 import com.maxrave.simpmusic.utils.eligiblePromos
 import com.maxrave.simpmusic.utils.osRequirementOf
-import com.maxrave.simpmusic.viewModel.FOOTGUNS_STAR_KEY
 import com.maxrave.simpmusic.viewModel.HomeViewModel
 import com.maxrave.simpmusic.viewModel.HomeViewModel.Companion.HOME_PARAMS_COMMUTE
 import com.maxrave.simpmusic.viewModel.HomeViewModel.Companion.HOME_PARAMS_ENERGIZE
@@ -242,7 +239,6 @@ import simpmusic.composeapp.generated.resources.what_is_best_choice_today
 import simpmusic.composeapp.generated.resources.workout
 
 // DataStore key for blog-promo one-shot dialog. Bump the suffix (v2, v3, …) to re-promote.
-private const val BLOG_PROMO_KEY = "blog_promo_v1_seen"
 
 // Launch banner timing: how long Home's own launch dialogs get to settle, and how long the screen must
 // stay free of other dialogs before the banner draws.
@@ -312,7 +308,6 @@ fun HomeScreen(
     val homeListState by viewModel.homeListState.collectAsStateWithLifecycle()
     val continuation by viewModel.continuation.collectAsStateWithLifecycle()
 
-    val shouldShowLogInAlert by viewModel.showLogInAlert.collectAsStateWithLifecycle()
 
     val openAppTime by sharedViewModel.openAppTime.collectAsStateWithLifecycle()
     val shareLyricsPermissions by sharedViewModel.shareSavedLyrics.collectAsStateWithLifecycle()
@@ -378,12 +373,6 @@ fun HomeScreen(
         mutableStateOf(false)
     }
     var showRequestShareLyricsPermissions by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var showBlogPromoDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var showFootgunsDialog by rememberSaveable {
         mutableStateOf(false)
     }
     // Decided once per launch (saveable, so a rotation does not count as a new launch).
@@ -458,21 +447,9 @@ fun HomeScreen(
             showReviewDialog = true
         } else if ((openAppTime == 1 || openAppTime % 15 == 0) && openAppTime <= 60 && !shareLyricsPermissions) {
             showRequestShareLyricsPermissions = true
-        } else if (openAppTime == 5) {
-            // Blog promo: one-shot after 5 app opens, bump key suffix to re-promote later
-            if (sharedViewModel.getString(BLOG_PROMO_KEY) != "true") {
-                showBlogPromoDialog = true
-            }
-        } else if (openAppTime % 10 == 6 &&
-            openAppTime <= 46 &&
-            sharedViewModel.getString(FOOTGUNS_STAR_KEY) != "true"
-        ) {
-            // kotlin-footguns star prompt: 6, 16, 26, 36, 46 - one open after each review milestone,
-            // and clear of the share-lyrics (15, 45) and blog-promo (5) milestones
-            showFootgunsDialog = true
         } else {
+            // Lite fork: the blog and kotlin-footguns promos are gone.
             showReviewDialog = false
-            showFootgunsDialog = false
             showRequestShareLyricsPermissions = false
         }
     }
@@ -526,36 +503,6 @@ fun HomeScreen(
         )
     }
 
-    if (showFootgunsDialog) {
-        FootgunsStarDialog(
-            onDismissRequest = {
-                // "Later" advances OPEN_APP_TIME, the same way the review and share-lyrics dialogs do.
-                // Home's launch effect runs again every time Home re-enters composition, reading the
-                // stored count; leaving it untouched kept the milestone condition true, so the prompt
-                // came back on every return to Home until the app was restarted.
-                showFootgunsDialog = false
-                sharedViewModel.onDoneReview(isDismissOnly = true)
-            },
-            onDoneStar = {
-                sharedViewModel.putString(FOOTGUNS_STAR_KEY, "true")
-                showFootgunsDialog = false
-            },
-        )
-    }
-
-    if (showBlogPromoDialog) {
-        BlogPromoDialog(
-            onDismissRequest = {
-                sharedViewModel.putString(BLOG_PROMO_KEY, "true")
-                showBlogPromoDialog = false
-            },
-            onVisitBlog = {
-                sharedViewModel.putString(BLOG_PROMO_KEY, "true")
-                showBlogPromoDialog = false
-            },
-        )
-    }
-
     if (showRequestShareLyricsPermissions) {
         ShareSavedLyricsDialog(
             onDismissRequest = {
@@ -573,8 +520,7 @@ fun HomeScreen(
     }
 
     val otherDialogOpen =
-        appDialogOpen || showReviewDialog || showRequestShareLyricsPermissions || showBlogPromoDialog ||
-            showFootgunsDialog || shouldShowLogInAlert
+        appDialogOpen || showReviewDialog || showRequestShareLyricsPermissions
     // The launch banner, decided once per launch. It waits for Home to settle on its own dialogs (the
     // open count and the lyrics-sharing flag load just after the first frame) and for the update check
     // started at launch, however long that takes, so an update dialog comes first. Then it takes the
@@ -679,59 +625,6 @@ fun HomeScreen(
             onFailed = {
                 Logger.w("Promo", "Picture failed to load for ${banner.id}; closed without counting it")
                 promoBanner = null
-            },
-        )
-    }
-
-    if (shouldShowLogInAlert) {
-        var doNotShowAgain by rememberSaveable {
-            mutableStateOf(false)
-        }
-        AlertDialog(
-            title = {
-                Text(stringResource(Res.string.warning))
-            },
-            text = {
-                Column {
-                    Text(text = stringResource(Res.string.log_in_warning))
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier =
-                            Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable {
-                                    doNotShowAgain = !doNotShowAgain
-                                }.fillMaxWidth(),
-                    ) {
-                        Checkbox(
-                            checked = doNotShowAgain,
-                            onCheckedChange = {
-                                doNotShowAgain = it
-                            },
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(stringResource(Res.string.do_not_show_again))
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.doneShowLogInAlert(doNotShowAgain)
-                    navController.navigate(LoginDestination)
-                }) {
-                    Text(stringResource(Res.string.go_to_log_in_page))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    viewModel.doneShowLogInAlert(doNotShowAgain)
-                }) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            },
-            onDismissRequest = {
-                viewModel.doneShowLogInAlert()
             },
         )
     }

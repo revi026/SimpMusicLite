@@ -653,7 +653,9 @@ fun LyricsView(
                                         parsedLine = parsedLine,
                                         translatedWords = translatedWords,
                                         romanizedWords = romanizedWords,
-                                        currentTimeMs = current.current - lyricsOffsetMs,
+                                        // Lite fork: only the sung line reads the clock. Every visible rich line reading
+                                        // it recomposed all of them on each 100 ms tick.
+                                        currentTimeMs = if (index == currentLineIndex) current.current - lyricsOffsetMs else 0L,
                                         isCurrent = index == currentLineIndex,
                                         customFontSize = if (appleStyle) AppleMusicLyricFontSize else null,
                                         glow = if (appleStyle && index == currentLineIndex) AppleMusicActiveLineGlow else null,

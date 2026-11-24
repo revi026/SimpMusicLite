@@ -382,6 +382,8 @@ import simpmusic.composeapp.generated.resources.lyrics_offset
 import simpmusic.composeapp.generated.resources.lyrics_offset_invalid
 import simpmusic.composeapp.generated.resources.lyrics_offset_message
 import simpmusic.composeapp.generated.resources.lyrics_offset_value
+import simpmusic.composeapp.generated.resources.lyrics_word_by_word
+import simpmusic.composeapp.generated.resources.lyrics_word_by_word_description
 import simpmusic.composeapp.generated.resources.lyrics_romanization
 import simpmusic.composeapp.generated.resources.lyrics_romanization_description
 import simpmusic.composeapp.generated.resources.romanization_belarusian
@@ -591,6 +593,7 @@ fun SettingScreen(
     val killServiceOnExit by remember { viewModel.killServiceOnExit.map { it == TRUE } }.collectAsStateWithLifecycle(initialValue = true)
     val mainLyricsProvider by viewModel.mainLyricsProvider.collectAsStateWithLifecycle()
     val lyricsOffsetMs by viewModel.lyricsOffsetMs.collectAsStateWithLifecycle()
+    val wordByWordLyrics by viewModel.wordByWordLyrics.collectAsStateWithLifecycle()
     val youtubeSubtitleLanguage by viewModel.youtubeSubtitleLanguage.collectAsStateWithLifecycle()
     val preferredAudioLanguage by viewModel.preferredAudioLanguage.collectAsStateWithLifecycle()
     val spotifyLoggedIn by viewModel.spotifyLogIn.collectAsStateWithLifecycle()
@@ -1867,6 +1870,12 @@ fun SettingScreen(
                                 ),
                             )
                         },
+                    )
+
+                    SettingItem(
+                        title = stringResource(Res.string.lyrics_word_by_word),
+                        subtitle = stringResource(Res.string.lyrics_word_by_word_description),
+                        switch = (wordByWordLyrics to { viewModel.setWordByWordLyrics(it) }),
                     )
 
                     SettingItem(
