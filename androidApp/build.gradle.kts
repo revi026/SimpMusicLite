@@ -92,8 +92,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // -Psimpmusic.minify=false keeps class and method names readable (diagnostics only).
+            isMinifyEnabled = (project.findProperty("simpmusic.minify") as String?) != "false"
+            isShrinkResources = (project.findProperty("simpmusic.minify") as String?) != "false"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
