@@ -19,6 +19,7 @@ object FrameDiag {
     fun start() {
         if (started) return
         started = true
+        com.maxrave.simpmusic.diag.Recomp.enabled = true
         Snapshot.registerGlobalWriteObserver { state ->
             val key = state.javaClass.simpleName + "@" + Integer.toHexString(System.identityHashCode(state))
             counts.getOrPut(key) { AtomicInteger() }.incrementAndGet()
@@ -38,6 +39,9 @@ object FrameDiag {
                     val top = counts.entries.sortedByDescending { it.value.get() }.take(8)
                     Log.w("FrameDiag", "---- state writes in the last 4s: ${counts.values.sumOf { it.get() }} total ----")
                     top.forEach { Log.w("FrameDiag", "${it.value.get()} x ${it.key}: ${firstStack[it.key]}") }
+                    val rc = com.maxrave.simpmusic.diag.Recomp.counts
+                    Log.w("FrameDiag", "recompositions in 4s: " + rc.entries.sortedByDescending { it.value }.joinToString(", ") { "${it.key}=${it.value}" })
+                    rc.clear()
                     counts.clear()
                     handler.postDelayed(this, 4000)
                 }
