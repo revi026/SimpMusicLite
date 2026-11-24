@@ -1177,4 +1177,5 @@
     <string name="translate_lyrics_with_ai">Translate lyrics with AI</string>
     <string name="ai_translate_needs_key">Add your AI API key in Settings → Accounts &amp; services → AI first</string>
     <string name="ai_translating">Translating lyrics with AI…</string>
+    <string name="ai_translate_failed">AI translation failed. Check the API key, base URL and model in Settings → Accounts &amp; services → AI</string>
 </resources>

@@ -114,6 +114,7 @@ import org.koin.core.component.inject
 import org.simpmusic.lastfm.completeLogin
 import simpmusic.composeapp.generated.resources.Res
 import simpmusic.composeapp.generated.resources.ai_translate_needs_key
+import simpmusic.composeapp.generated.resources.ai_translate_failed
 import simpmusic.composeapp.generated.resources.ai_translating
 import simpmusic.composeapp.generated.resources.added_local_playlist
 import simpmusic.composeapp.generated.resources.added_to_queue
@@ -1965,13 +1966,15 @@ class SharedViewModel(
             val shown = _nowPlayingScreenData.value.lyricsData?.takeIf { it.videoId == videoId } ?: return@launch
             dataStoreManager.setUseAITranslation(true)
             makeToast(getString(Res.string.ai_translating))
-            getAITranslationLyrics(videoId, shown.lyrics)
+            getAITranslationLyrics(videoId, shown.lyrics, notifyFailure = true)
         }
     }
 
     private suspend fun getAITranslationLyrics(
         videoId: String,
         lyrics: Lyrics,
+        // True only when the user asked for this translation, so a failure is not just a log line.
+        notifyFailure: Boolean = false,
     ) {
         Logger.d(tag, "Get AI Translation Lyrics for $videoId")
         if (dataStoreManager.useAITranslation.first() == TRUE &&
@@ -2035,6 +2038,7 @@ class SharedViewModel(
 
                             else -> {
                                 Logger.w(tag, "Get AI Translate Lyrics Error: ${it.message}")
+                                if (notifyFailure && it is Resource.Error) makeToast(getString(Res.string.ai_translate_failed))
                             }
                         }
                     }
