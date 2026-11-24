@@ -25,6 +25,9 @@ fun SimpMusicChartButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    // Lite fork: the author's "Introducing SimpMusic Chart" promo pill is not drawn.
+    return
+    @Suppress("UNREACHABLE_CODE")
     val isDark = LocalIsDarkTheme.current
     // Dark: original warm-black pill (reads as a warm/orange tint on the dark page). Light: a warm
     // cream-orange pill so it doesn't turn into a hard black slab on the white page.
