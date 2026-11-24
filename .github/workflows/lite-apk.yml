@@ -38,11 +38,26 @@ jobs:
         run: ./gradlew exportLibraryDefinitions -PisFullBuild=false
 
       - name: Build release APK (FOSS)
-        run: >
-          ./gradlew androidApp:assembleRelease
-          -PisFullBuild=false
-          -Psimpmusic.abis=${{ inputs.abis || 'arm64-v8a' }}
-          --stacktrace
+        shell: bash
+        run: |
+          ./gradlew androidApp:assembleRelease \
+            -PisFullBuild=false \
+            -Psimpmusic.abis=${{ inputs.abis || 'arm64-v8a' }} \
+            --stacktrace 2>&1 | tee "$RUNNER_TEMP/build.log"
+
+      # Logs need a login to read; annotations do not. Surface the Gradle error there.
+      - name: Summarise build failure
+        if: failure()
+        shell: bash
+        run: |
+          LOG="$RUNNER_TEMP/build.log"
+          [ -f "$LOG" ] || exit 0
+          {
+            awk '/\* What went wrong:/{f=1} /\* Try:/{f=0} f' "$LOG" | head -n 25
+            grep -E '^e: |^w: .*error|Caused by:' "$LOG" | head -n 15
+          } > "$RUNNER_TEMP/summary.txt"
+          msg="$(head -c 3500 "$RUNNER_TEMP/summary.txt" | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')"
+          echo "::error title=Gradle failure::$msg"
 
       - name: Prepare signing key
         env:
