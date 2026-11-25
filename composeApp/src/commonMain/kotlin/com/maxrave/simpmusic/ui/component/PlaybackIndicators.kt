@@ -56,24 +56,15 @@ import kotlin.math.sin
  *
  * The motion lives in animated PATHS (the rectangle is redrawn vertex by vertex each keyframe),
  * not in any transform, which is why every layer and parent in the file reads `p=(0,0)`.
+ *
+ * Lite fork: the bars stand still, on one keyframe. A row stays "the playing one" while paused too,
+ * so the endless loop redrew the whole window on every frame for as long as that row was on screen.
  */
 @Composable
 fun AudioPlayingIndicator(
     modifier: Modifier = Modifier,
     color: Color = AudioIndicatorCyan,
 ) {
-    val transition = rememberInfiniteTransition(label = "audioPlaying")
-    val phase by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(durationMillis = AUDIO_CYCLE_MS, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart,
-            ),
-        label = "phase",
-    )
-
     Canvas(modifier = modifier) {
         val scale = minOf(size.width / AUDIO_COMP_WIDTH, size.height / AUDIO_COMP_HEIGHT)
         val originX = (size.width - AUDIO_COMP_WIDTH * scale) / 2f
@@ -83,7 +74,7 @@ fun AudioPlayingIndicator(
         val capRadius = strokeWidth / 2f
 
         AUDIO_BAR_X.forEachIndexed { bar, barX ->
-            val height = audioBarHeight(bar, phase) * scale
+            val height = audioBarHeight(bar, AUDIO_STILL_PHASE) * scale
             // Round caps extend half a stroke past each end, so the drawn segment is the bar minus
             // its two caps — otherwise every bar renders one full stroke width too tall.
             val half = (height / 2f - capRadius).coerceAtLeast(0f)
@@ -286,8 +277,8 @@ private val AUDIO_BAR_HEIGHTS =
         floatArrayOf(70.3f, 15.2f, 62.8f, 29f, 71.2f, 40f, 15.2f),
     )
 
-/** 144 frames at 100fps. */
-private const val AUDIO_CYCLE_MS = 1_440
+/** The middle keyframe, where the six bars differ most from their neighbours. */
+private const val AUDIO_STILL_PHASE = 0.5f
 
 /** 50 frames at 25fps. */
 private const val DOWNLOAD_CYCLE_MS = 2_000

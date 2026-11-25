@@ -984,7 +984,7 @@ fun NowPlayingScreenContent(
 
 /** A hue that sweeps 0..360 once a second. Call it only while it is needed: reading it recomposes the caller each frame. */
 @Composable
-private fun rememberRainbowHue(): Float {
+internal fun rememberRainbowHue(): Float {
     val infiniteTransition = rememberInfiniteTransition(label = "crossfadeRainbow")
     val hue by infiniteTransition.animateFloat(
         initialValue = 0f,

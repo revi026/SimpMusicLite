@@ -5,11 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -65,6 +60,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -115,6 +111,7 @@ import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentActions
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentState
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingTrackInfoRow
 import com.maxrave.simpmusic.ui.screen.player.content.SpotifyPlaybackControls
+import com.maxrave.simpmusic.ui.screen.player.rememberRainbowHue
 import com.maxrave.simpmusic.ui.theme.ArtworkShape
 import com.maxrave.simpmusic.ui.theme.LocalLiquidGlassEnabled
 import com.maxrave.simpmusic.ui.theme.seed
@@ -129,9 +126,6 @@ import simpmusic.composeapp.generated.resources.Res
 import simpmusic.composeapp.generated.resources.crossfading
 import simpmusic.composeapp.generated.resources.share_lyrics
 import simpmusic.composeapp.generated.resources.unavailable
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 // The gutter this sheet has always used for its lyrics column.
 private val FULLSCREEN_LYRICS_GUTTER = 50.dp
@@ -304,18 +298,10 @@ fun FullscreenLyricsContent(
                 )
             }
         } else {
-            // Crossfade: RGB rainbow color cycling when transitioning between tracks
-            val infiniteTransition = rememberInfiniteTransition(label = "crossfadeRainbow")
-            val rainbowHue by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 360f,
-                animationSpec =
-                    infiniteRepeatable(
-                        animation = tween(1000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart,
-                    ),
-                label = "rainbowHue",
-            )
+            // Crossfade: RGB rainbow color cycling when transitioning between tracks.
+            // Lite fork: composed ONLY while crossfading, as on Now Playing. The hue is read here, in
+            // composition, so a transition that ran all the time recomposed this whole page every frame.
+            val rainbowHue = if (timelineCrossfading) rememberRainbowHue() else 0f
             val rainbowColor = hsvToColor(rainbowHue, 1f, 1f)
             val sliderTrackColor by animateColorAsState(
                 targetValue = if (timelineCrossfading) rainbowColor else Color.White,
@@ -1168,8 +1154,12 @@ private fun FullscreenLyricsList(
 }
 
 /**
- * The fullscreen lyrics page's background: a gradient from [color] down to black that drifts and
- * turns on a loop, and glides to a new [color] when the track changes.
+ * The fullscreen lyrics page's background: a gradient from [color] down to black that glides to a new
+ * [color] when the track changes.
+ *
+ * Lite fork: it stands still. Upstream also drifts and turns it on an endless loop, which redrew the
+ * whole page on every frame, paused or not; the target phone's GPU cannot keep up with that. The
+ * colour glide is the only animation left, and it ends.
  */
 @Composable
 internal fun AnimatedLyricsGradientBackground(
@@ -1181,44 +1171,6 @@ internal fun AnimatedLyricsGradientBackground(
     val midColor1 = remember { Animatable(color.copy(alpha = 0.95f)) }
     val midColor2 = remember { Animatable(color.copy(alpha = 0.85f)) }
     val endColor = remember { Animatable(Color.Black) }
-
-    // Dynamic gradient animation - MULTIPLE DIRECTIONS
-    // Replaces the previous `while(true) { delay(16) }` loop with a Compose
-    // infinite transition.
-    val gradientTransition = rememberInfiniteTransition(label = "lyricsGradient")
-    val animatedAngle by gradientTransition.animateFloat(
-        initialValue = -45f,
-        targetValue = 45f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(durationMillis = 6000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse,
-            ),
-        label = "lyricsGradientAngle",
-    )
-    val animatedOffsetX by gradientTransition.animateFloat(
-        initialValue = -1500f,
-        targetValue = 1500f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(durationMillis = 8000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse,
-            ),
-        label = "lyricsGradientOffsetX",
-    )
-    val animatedOffsetY by gradientTransition.animateFloat(
-        initialValue = -1000f,
-        targetValue = 1000f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(durationMillis = 8000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse,
-            ),
-        label = "lyricsGradientOffsetY",
-    )
-    val gradientAngle = animatedAngle
-    val gradientOffsetX = animatedOffsetX
-    val gradientOffsetY = animatedOffsetY
 
     // Smooth color animation based on lyrics color
     LaunchedEffect(color) {
@@ -1252,27 +1204,23 @@ internal fun AnimatedLyricsGradientBackground(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(
-                    Brush.linearGradient(
-                        colors =
-                            listOf(
-                                startColor.value,
-                                midColor1.value,
-                                midColor2.value,
-                                endColor.value.copy(alpha = 0.9f),
-                                endColor.value,
-                            ),
-                        start =
-                            Offset(
-                                x = gradientOffsetX + (cos(gradientAngle * PI.toFloat() / 180f) * 800f),
-                                y = gradientOffsetY + (sin(gradientAngle * PI.toFloat() / 180f) * 800f),
-                            ),
-                        end =
-                            Offset(
-                                x = gradientOffsetX + 2500f + (cos((gradientAngle + 180f) * PI.toFloat() / 180f) * 800f),
-                                y = gradientOffsetY + 2500f + (sin((gradientAngle + 180f) * PI.toFloat() / 180f) * 800f),
-                            ),
-                    ),
-                ),
+                // Read while drawing, so the colour glide redraws without recomposing. The two points
+                // are the middle of upstream's drift.
+                .drawBehind {
+                    drawRect(
+                        Brush.linearGradient(
+                            colors =
+                                listOf(
+                                    startColor.value,
+                                    midColor1.value,
+                                    midColor2.value,
+                                    endColor.value.copy(alpha = 0.9f),
+                                    endColor.value,
+                                ),
+                            start = Offset(x = 800f, y = 0f),
+                            end = Offset(x = 1700f, y = 2500f),
+                        ),
+                    )
+                },
     )
 }
