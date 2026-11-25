@@ -158,6 +158,8 @@ fun CreditScreen(
         CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
             CreditLink(stringResource(Res.string.lite_developer) + ": revi026", "https://github.com/revi026")
             CreditLink(stringResource(Res.string.lite_source_code), "https://github.com/revi026/SimpMusicLite")
+            // Lite fork: reports go to the fork. Upstream's tracker is no longer linked, so a Lite bug is not sent there.
+            CreditLink(stringResource(Res.string.issue_tracker), "https://github.com/revi026/SimpMusicLite/issues")
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -226,19 +228,6 @@ fun CreditScreen(
                 Text(text = stringResource(Res.string.github))
             }
 
-            // Issue tracker button
-            TextButton(
-                onClick = {
-                    openUrl("https://github.com/maxrave-dev/SimpMusic/issues")
-                },
-                modifier =
-                    Modifier
-                        .align(Alignment.Start)
-                        .padding(horizontal = 25.dp)
-                        .defaultMinSize(minHeight = 1.dp, minWidth = 1.dp),
-            ) {
-                Text(text = stringResource(Res.string.issue_tracker))
-            }
 
             // Buy me a coffee button
             TextButton(
