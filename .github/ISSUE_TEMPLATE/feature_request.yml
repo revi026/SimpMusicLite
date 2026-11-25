@@ -1,40 +1,34 @@
-name: Feature request
-description: Suggest an improvement or new idea for SimpMusic
-labels: [ "feat:unconfirmed" ]
+name: Đề xuất tính năng
+description: Góp ý cải thiện hoặc đề xuất tính năng mới
+labels: ["enhancement"]
 
 body:
   - type: markdown
     attributes:
       value: |
-        ⚠️ **Important:**  
-        Feature requests that are incomplete or not properly filled out will be closed without further explanation.
+        Đây là nơi nhận phản hồi về **SimpMusic Lite**, một bản fork cá nhân. Tác giả SimpMusic gốc không hỗ trợ bản này, nên xin đừng gửi lỗi của bản Lite sang dự án gốc.
+
+        ⚠️ **Issue là công khai, ai cũng đọc được.** Đừng dán cookie, API key, token, email hay thông tin tài khoản. Hãy đọc lại log và ảnh chụp trước khi đính kèm.
+        
+        Mục tiêu của bản Lite là chạy nhẹ trên máy cấu hình thấp, nên những hiệu ứng nặng đã gỡ nhiều khả năng sẽ không được thêm lại.
 
   - type: textarea
     id: problem
     attributes:
-      label: Problem Description
-      placeholder: Describe the underlying problem or pain point.
+      label: Vấn đề bạn đang gặp
+      placeholder: Điều gì đang bất tiện hoặc còn thiếu?
     validations:
       required: true
 
   - type: textarea
     id: solution
     attributes:
-      label: Proposed Solution
-      placeholder: Explain the solution or feature you'd like to see implemented.
-    validations:
-      required: true
-
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternative Solutions
-      placeholder: Describe any alternative approaches or features you've considered.
+      label: Cách bạn muốn app giải quyết
     validations:
       required: true
 
   - type: textarea
     id: context
     attributes:
-      label: Additional Context
-      placeholder: Add any extra context, details, or screenshots that help clarify your request.
+      label: Thông tin thêm (không bắt buộc)
+      description: Ảnh minh họa, cách bạn đang xoay xở, hoặc phương án khác.

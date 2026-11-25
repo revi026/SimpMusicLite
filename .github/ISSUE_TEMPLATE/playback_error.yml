@@ -1,91 +1,52 @@
-name: Playback error
-description: Music stops, fails to start, or errors out during playback
-labels: [ "bug:unconfirmed", "area:playback" ]
+name: Lỗi phát nhạc
+description: Nhạc không phát, bị dừng, tải mãi hoặc báo lỗi khi phát
+labels: ["bug"]
 
 body:
   - type: markdown
     attributes:
       value: |
-        ⚠️ **Important:**
-        Issues that are incomplete or not properly filled out will be closed without further explanation.
+        Đây là nơi nhận phản hồi về **SimpMusic Lite**, một bản fork cá nhân. Tác giả SimpMusic gốc không hỗ trợ bản này, nên xin đừng gửi lỗi của bản Lite sang dự án gốc.
+
+        ⚠️ **Issue là công khai, ai cũng đọc được.** Đừng dán cookie, API key, token, email hay thông tin tài khoản. Hãy đọc lại log và ảnh chụp trước khi đính kèm.
 
   - type: checkboxes
-    id: duplicate_check
+    id: checks
     attributes:
-      label: Duplicate Check
-      description: Confirm you searched both open and closed issues.
+      label: Kiểm tra trước khi gửi
       options:
-        - label: I confirm I searched for existing reports and found no duplicates.
+        - label: Mình đã tìm trong các issue đang mở và đã đóng, chưa thấy ai báo lỗi này.
+          required: true
+        - label: "Mình đang dùng [bản mới nhất](https://github.com/revi026/SimpMusicLite/releases/latest) và lỗi vẫn còn."
           required: true
 
-  - type: checkboxes
-    id: latest_release
-    attributes:
-      label: Latest Release
-      description: Check the [Releases page](https://github.com/maxrave-dev/SimpMusic/releases) — this may already be fixed.
-      options:
-        - label: I confirm I am on the latest release and the problem still happens.
-          required: true
-
-  - type: dropdown
-    id: platform
-    attributes:
-      label: Platform
-      options:
-        - Android
-        - Desktop (Windows)
-        - Desktop (macOS)
-        - Desktop (Linux)
-    validations:
-      required: true
-
-  - type: dropdown
-    id: build_variant
-    attributes:
-      label: Build Variant
-      options:
-        - Full
-        - FOSS
-        - Not sure
-    validations:
-      required: true
-
   - type: input
-    id: version
+    id: track
     attributes:
-      label: App Version
-      placeholder: e.g. 2.1.0
-    validations:
-      required: true
-
-  - type: input
-    id: previous_version
-    attributes:
-      label: Did this work in a previous version?
-      placeholder: e.g. "Yes, worked fine on 1.5.1" or "No, never worked"
+      label: Bài bị lỗi (tên bài hoặc link)
+      description: Ghi thêm nếu bài nào cũng bị.
 
   - type: checkboxes
     id: context
     attributes:
-      label: Context
-      description: Check any that apply — helps narrow down the cause.
+      label: Bối cảnh (đánh dấu nếu đúng)
       options:
-        - label: I am logged in to a YouTube Music account
-        - label: Crossfade or DJ-style transition is enabled
-        - label: The problem started right after a network interruption (Wi-Fi drop, mobile signal loss, etc.)
+        - label: Mình đang đăng nhập tài khoản YouTube Music
+        - label: Đang bật crossfade hoặc chuyển bài kiểu DJ
+        - label: Lỗi bắt đầu sau khi mạng bị ngắt hoặc đổi mạng
 
   - type: textarea
-    id: bug_description
+    id: description
     attributes:
-      label: Describe the Bug
-      placeholder: What happens — does playback stop, fail to start, skip, show an error message?
+      label: Mô tả lỗi
+      placeholder: Nhạc không phát, tự dừng, tải mãi hay hiện thông báo lỗi?
     validations:
       required: true
 
   - type: textarea
     id: reproduce
     attributes:
-      label: Steps to Reproduce
+      label: Các bước làm lại lỗi
       placeholder: |
         1. …
         2. …
@@ -96,13 +57,60 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: Expected Behavior
-      placeholder: Describe what you expected to happen instead.
+      label: Kết quả bạn mong đợi
     validations:
       required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Phiên bản SimpMusic Lite
+      description: Xem trong Cài đặt → Giới thiệu & nhà phát triển.
+      placeholder: "ví dụ: 1.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: abi
+    attributes:
+      label: Bản APK đã cài
+      options:
+        - arm64-v8a (64-bit)
+        - armeabi-v7a (32-bit)
+        - Không rõ
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Đời máy
+      placeholder: "ví dụ: Samsung Galaxy J7 Prime"
+    validations:
+      required: true
+
+  - type: input
+    id: android
+    attributes:
+      label: Phiên bản Android
+      placeholder: "ví dụ: Android 10"
+    validations:
+      required: true
+
+  - type: input
+    id: rom
+    attributes:
+      label: ROM cook hoặc ROM port (nếu có)
+      description: Để trống nếu máy dùng ROM gốc.
+      placeholder: Tên ROM
 
   - type: textarea
     id: logs
     attributes:
-      label: Log / Error Details
-      placeholder: Paste any error message or crash log shown.
+      label: Log hoặc thông báo lỗi (không bắt buộc)
+      description: Nếu app bị văng, dán log vào đây. Nhớ xóa mọi thông tin riêng tư trước.
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Ảnh chụp màn hình (không bắt buộc)

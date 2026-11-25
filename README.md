@@ -53,6 +53,14 @@ Bản fork cá nhân của [SimpMusic](https://github.com/maxrave-dev/SimpMusic)
 
 Muốn thử bản mới nhất chưa phát hành: tải artifact `simpmusic-lite` trong tab [Actions](https://github.com/revi026/SimpMusicLite/actions) (cần đăng nhập GitHub, được lưu 14 ngày).
 
+## Báo lỗi và góp ý
+
+[Tạo issue mới](https://github.com/revi026/SimpMusicLite/issues/new/choose) rồi chọn mẫu **Báo lỗi**, **Lỗi phát nhạc** hoặc **Đề xuất tính năng**.
+
+- Hãy ghi phiên bản app (Cài đặt → Giới thiệu & nhà phát triển), bản APK đã cài, đời máy và phiên bản Android.
+- Issue là công khai: đừng dán cookie, API key, token hay thông tin tài khoản, và hãy đọc lại log trước khi gửi.
+- Xin đừng gửi lỗi của bản Lite sang dự án gốc.
+
 ## Tự build
 
 Fork repo này rồi chạy workflow [`lite-apk.yml`](.github/workflows/lite-apk.yml) (tự chạy khi push lên `lite`, hoặc chạy thủ công).
@@ -81,7 +89,7 @@ Phát hành theo [GNU GPL v3.0](LICENSE), cùng giấy phép với dự án gố
 
 ## Legal Disclaimer & Terms of Use
 
-> Phần dưới đây giữ nguyên văn của dự án gốc, nên email trong đó là của tác giả gốc. Vấn đề riêng của bản Lite xin liên hệ qua GitHub [revi026](https://github.com/revi026).
+> Phần dưới đây giữ nguyên văn của dự án gốc, nên email trong đó là của tác giả gốc. Vấn đề riêng của bản Lite xin gửi qua [Issues](https://github.com/revi026/SimpMusicLite/issues) hoặc liên hệ GitHub [revi026](https://github.com/revi026).
 
 ### 1. 100% Free, Open-Source & Strictly Non-Commercial
 SimpMusic is a fully open-source project (FOSS) created purely for educational purposes and personal use. **We do not sell this application, nor do we monetize it in any way.** There are no advertisements, no premium features, no subscriptions, and no hidden fees within the app. This project has absolutely no commercial value or financial intent.
