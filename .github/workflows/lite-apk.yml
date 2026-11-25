@@ -27,6 +27,22 @@ jobs:
         with:
           submodules: 'recursive'
 
+      # `core` is upstream's submodule, so Lite's changes to it are kept here as patches. A patch that
+      # no longer applies (after a submodule bump) must stop the build, not ship an APK without it.
+      - name: Apply Lite patches to core
+        shell: bash
+        run: |
+          shopt -s nullglob
+          patches=("$GITHUB_WORKSPACE"/patches/core/*.patch)
+          if [ ${#patches[@]} -eq 0 ]; then
+            echo "::error::No patches found in patches/core"
+            exit 1
+          fi
+          for p in "${patches[@]}"; do
+            git -C core apply --verbose "$p" || { echo "::error::Patch does not apply to core: $(basename "$p")"; exit 1; }
+          done
+          git -C core diff --stat
+
       - name: set up JDK 21
         uses: actions/setup-java@v4
         with:

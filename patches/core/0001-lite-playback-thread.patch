@@ -1,0 +1,54 @@
+diff --git a/media/media3/src/main/java/com/maxrave/media3/audio/CrossfadeFilterAudioProcessor.kt b/media/media3/src/main/java/com/maxrave/media3/audio/CrossfadeFilterAudioProcessor.kt
+index 53ad802..b90df91 100644
+--- a/media/media3/src/main/java/com/maxrave/media3/audio/CrossfadeFilterAudioProcessor.kt
++++ b/media/media3/src/main/java/com/maxrave/media3/audio/CrossfadeFilterAudioProcessor.kt
+@@ -118,9 +118,11 @@ class CrossfadeFilterAudioProcessor : BaseAudioProcessor() {
+     }
+ 
+     /**
+-     * Copy bytes from src to dst. Use this instead of dst.put(src) because
+-     * replaceOutputBuffer() may return the same buffer as input, and
++     * Copy the [size] bytes left in src to dst. The same-buffer case is handled apart because
+      * ByteBuffer.put(ByteBuffer) throws if source and destination are the same.
++     *
++     * Lite fork: one bulk copy. This runs on every buffer of playback while the filter is off, and the
++     * per-byte get/put loop it replaces was about a quarter of the playback thread on the target phone.
+      */
+     private fun copyBuffer(src: ByteBuffer, dst: ByteBuffer, size: Int) {
+         if (src === dst) {
+@@ -128,11 +130,7 @@ class CrossfadeFilterAudioProcessor : BaseAudioProcessor() {
+             dst.limit(size)
+             return
+         }
+-        val pos = src.position()
+-        for (i in 0 until size) {
+-            dst.put(src.get(pos + i))
+-        }
+-        src.position(pos + size)
++        dst.put(src)
+     }
+ 
+     private fun processMonoBlock(input: ByteBuffer, output: ByteBuffer) {
+diff --git a/media/media3/src/main/java/com/maxrave/media3/waveform/WaveformReader.kt b/media/media3/src/main/java/com/maxrave/media3/waveform/WaveformReader.kt
+index dd7fe46..267db29 100644
+--- a/media/media3/src/main/java/com/maxrave/media3/waveform/WaveformReader.kt
++++ b/media/media3/src/main/java/com/maxrave/media3/waveform/WaveformReader.kt
+@@ -67,12 +67,12 @@ internal class WaveformReader(
+         positionMs: Long,
+     ): Float = playbackWaveforms.bassPulse(mediaId.removePrefix(MERGING_DATA_TYPE.VIDEO), positionMs)
+ 
+-    fun playbackSink(delegate: AudioSink, mediaId: String?): AudioSink =
+-        if (mediaId.isNullOrBlank()) {
+-            delegate
+-        } else {
+-            WaveformAudioSink(delegate, mediaId.removePrefix(MERGING_DATA_TYPE.VIDEO), playbackWaveforms)
+-        }
++    // Lite fork: the player's sink is used as it is. The live waveform and bass envelope measured here
++    // are read only by the SoundCloud player and the animated lyrics background, both removed from Lite,
++    // and measuring them took about a quarter of the playback thread on the target phone. AutoMix does
++    // not use them: it measures from its own decode in structure().
++    @Suppress("UNUSED_PARAMETER")
++    fun playbackSink(delegate: AudioSink, mediaId: String?): AudioSink = delegate
+ 
+     /** AutoMix's measurements of the track; null when it has none (yet, or ever). */
+     suspend fun structure(mediaId: String): TrackStructure? =
