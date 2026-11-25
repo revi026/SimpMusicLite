@@ -86,7 +86,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import kotlin.math.floor
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -290,47 +291,27 @@ fun NowPlayingContentSpotify(
                 // drags fall through to the Pager.
                 .then(
                     if (state.showHideMiddleLayout) {
-                        Modifier
-                            // The backdrop fills the whole scrollable content, then the gradient
-                            // is drawn over just the first screen height. Using background() for
-                            // the gradient instead would stretch it across the entire content,
-                            // which is what made it run on forever while scrolling.
-                            .background(PlayerBackdropColor)
-                            .drawBehind {
-                                val gradientHeight = screenInfo.hPX.toFloat()
-                                val area = Size(size.width, gradientHeight)
-                                // Palette gradient, keeping its diagonal angle.
-                                drawRect(
-                                    brush =
-                                        Brush.linearGradient(
-                                            colors =
-                                                listOf(
-                                                    state.startColor.value,
-                                                    state.endColor.value,
-                                                ),
-                                            start = state.gradientOffset.start,
-                                            end = state.gradientOffset.end,
-                                        ),
-                                    size = area,
-                                )
-                                // Vertical fade to the backdrop colour, fully opaque from 90%
-                                // down, so the bottom edge meets the area underneath seamlessly
-                                // across the whole width. Adding the same colour as a stop to
-                                // the diagonal gradient above could not do that — it would only
-                                // arrive in one corner and leave a visible diagonal seam.
-                                drawRect(
-                                    brush =
-                                        smoothScrimBrush(
-                                            from = PlayerBackdropColor.copy(alpha = 0f),
-                                            to = PlayerBackdropColor,
-                                            startY = 0f,
-                                            // Reaches full opacity at 95% and is held there by Clamp,
-                                            // same as the old `0.95f to PlayerBackdropColor` stop.
-                                            endY = gradientHeight * 0.95f,
-                                        ),
-                                    size = area,
-                                )
-                            }
+                        // Lite fork: every pixel of the page is painted ONCE. Upstream stacks a solid backdrop, a
+                        // diagonal palette gradient and a 25-stop fade over it, and on the target phone's GPU moving
+                        // the first screen then cost about 79 ms a frame against 32 ms further down. Now the first
+                        // screen is one two-colour vertical gradient, and the solid colour starts where it ends.
+                        Modifier.drawBehind {
+                            val gradientEnd = floor(screenInfo.hPX.toFloat() * 0.95f).coerceAtMost(size.height)
+                            drawRect(
+                                brush =
+                                    Brush.verticalGradient(
+                                        colors = listOf(state.startColor.value, PlayerBackdropColor),
+                                        startY = 0f,
+                                        endY = gradientEnd,
+                                    ),
+                                size = Size(size.width, gradientEnd),
+                            )
+                            drawRect(
+                                color = PlayerBackdropColor,
+                                topLeft = Offset(0f, gradientEnd),
+                                size = Size(size.width, size.height - gradientEnd),
+                            )
+                        }
                     } else {
                         Modifier.background(Color.Black)
                     },
@@ -563,16 +544,8 @@ fun NowPlayingContentSpotify(
                                             modifier =
                                                 Modifier
                                                     .align(Alignment.Center)
-                                                    .background(Color.Transparent)
-                                                    .shadow(
-                                                        elevation = 3.dp,
-                                                        shape = ArtworkShape,
-                                                        spotColor =
-                                                            state.spotShadowColor.copy(
-                                                                alpha = 0.6f,
-                                                            ),
-                                                        ambientColor = Color.Transparent,
-                                                    ),
+                                                    // Lite fork: no elevation shadow under the artwork.
+                                                    .background(Color.Transparent),
                                         ) {
                                             AsyncImage(
                                                 model =
@@ -601,10 +574,8 @@ fun NowPlayingContentSpotify(
                                                         .align(Alignment.Center)
                                                         .padding(3.dp)
                                                         .then(
-                                                            // Hidden while the video plays, but its box is what
-                                                            // the shadow above is cast from — so it takes the
-                                                            // video frame's shape, or a 16:9 shadow rings a
-                                                            // tall video.
+                                                            // Hidden while the video plays, but its box still
+                                                            // sizes the slot, so it takes the video frame's shape.
                                                             if (state.screenData.isVideo && state.shouldShowVideo) {
                                                                 Modifier.aspectRatio(state.videoAspectRatio)
                                                             } else {
@@ -790,13 +761,7 @@ fun NowPlayingContentSpotify(
                                             modifier =
                                                 Modifier
                                                     .align(Alignment.Center)
-                                                    .background(Color.Transparent)
-                                                    .shadow(
-                                                        elevation = 3.dp,
-                                                        shape = ArtworkShape,
-                                                        spotColor = Color.Black.copy(alpha = 0.4f),
-                                                        ambientColor = Color.Transparent,
-                                                    ),
+                                                    .background(Color.Transparent),
                                         ) {
                                             AsyncImage(
                                                 model =

@@ -150,9 +150,11 @@ fun NowPlayingScreen(
         onDismissRequest = {
             onDismiss()
         },
-        containerColor = Color.Black,
+        // Lite fork: the content paints the whole window itself, so a container fill and a scrim under it were
+        // two more full-screen layers on every frame. The transparent scrim keeps its tap-to-dismiss behaviour.
+        containerColor = Color.Transparent,
         dragHandle = {},
-        scrimColor = Color.Black.copy(alpha = .5f),
+        scrimColor = Color.Transparent,
         sheetState = sheetState,
         contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
         shape = RectangleShape,
