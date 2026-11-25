@@ -77,6 +77,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -125,8 +126,6 @@ import com.maxrave.simpmusic.expect.ui.HorizontalScrollBar
 import com.maxrave.simpmusic.expect.ui.VerticalScrollBar
 import com.maxrave.simpmusic.expect.ui.layerBackdrop
 import com.maxrave.simpmusic.expect.ui.rememberBackdrop
-import com.maxrave.simpmusic.extension.angledGradientBackground
-import com.maxrave.simpmusic.extension.artworkScrimBrush
 import com.maxrave.simpmusic.extension.getScreenSizeInfo
 import com.maxrave.simpmusic.extension.isScrollingUp
 import com.maxrave.simpmusic.extension.mouseDragScroll
@@ -340,11 +339,6 @@ fun HomeScreen(
     }
     val animatedColor by animateColorAsState(topHeaderColor, tween(500))
     val mainHomeThumbnail by viewModel.mainHomeThumbnail.collectAsStateWithLifecycle()
-    // YouTube's Home backdrop, drawn over the tint taken from the first card's artwork. A response
-    // that carries none keeps the tint alone, and a failed load drops the image and its scrim,
-    // leaving the tint as it was.
-    val headerImage by viewModel.homeBackground.collectAsStateWithLifecycle()
-    var headerImageFailed by remember(headerImage) { mutableStateOf(false) }
     val networkLoader = rememberNetworkLoader(HttpClient(CIO))
     val dominantColorState =
         rememberDominantColorState(
@@ -650,43 +644,22 @@ fun HomeScreen(
                                                     val placeable =
                                                         measurable.measure(constraints.copy(minHeight = height, maxHeight = height))
                                                     layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(0, 0) }
-                                                }.angledGradientBackground(listOf(animatedColor, pageBackground), 25f),
-                                    ) {
-                                        if (headerImage != null && !headerImageFailed) {
-                                            AsyncImage(
-                                                model =
-                                                    ImageRequest
-                                                        .Builder(LocalPlatformContext.current)
-                                                        .data(headerImage)
-                                                        .crossfade(550)
-                                                        .build(),
-                                                contentDescription = null,
-                                                contentScale = ContentScale.Crop,
-                                                onError = { headerImageFailed = true },
-                                                modifier = Modifier.fillMaxSize(),
-                                            )
-                                            // Always over the image, which can be very bright: a layer of the
-                                            // page's own colour tones it down in either theme and fades it
-                                            // into the page along the tint's own 25° line, not in a flat
-                                            // band at the bottom.
-                                            Box(
-                                                Modifier
-                                                    .fillMaxSize()
-                                                    .angledGradientBackground(listOf(pageBackground.copy(alpha = 0.6f), pageBackground), 25f),
-                                            )
-                                        }
-                                        Box(
-                                            modifier =
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    // A share of the glow, not a fixed 180dp: on a glow
-                                                    // ~560dp tall, 180dp made a long flat field that
-                                                    // dropped off in one short step.
-                                                    .fillMaxHeight(0.6f)
-                                                    .align(Alignment.BottomCenter)
-                                                    .background(artworkScrimBrush(pageBackground)),
-                                        )
-                                    }
+                                                }
+                                                // Lite fork: the whole glow is this one gradient. Upstream paints an angled
+                                                // tint, YouTube's header picture, a second angled gradient and a 25-stop
+                                                // scrim on top of each other, and on the target phone moving the top of
+                                                // Home then cost about 95 ms a frame against 28 ms further down. The
+                                                // middle stop eases the colour out, so no edge shows where it ends.
+                                                .drawBehind {
+                                                    drawRect(
+                                                        Brush.verticalGradient(
+                                                            0f to animatedColor,
+                                                            0.55f to lerp(pageBackground, animatedColor, 0.35f),
+                                                            1f to pageBackground,
+                                                        ),
+                                                    )
+                                                },
+                                    )
                                 }
                                 Column(
                                     modifier =
