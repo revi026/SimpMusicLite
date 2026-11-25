@@ -2,7 +2,63 @@
 
 ## 🌐 Language Rule
 
-**Response language**: Always respond in **English**.
+**Response language**: Always respond in **Vietnamese**. This covers replies to the user only: code, code comments, commit messages and this file stay in English.
+
+## 🪶 Lite Fork (branch `lite`) — READ THIS FIRST
+
+This repository is **SimpMusic Lite** (`origin` = `revi026/SimpMusicLite`), a personal fork of `maxrave-dev/SimpMusic` (`upstream`) based on 2.6.0, trimmed to run well on a low-end Android phone. Work happens on `lite`.
+
+**The rest of this file describes upstream.** Where it disagrees with this section or with the code on `lite`, this section and the code win.
+
+### Removed or switched off
+
+- **All blur and liquid glass.** `ui/noblur/NoBlur.kt` holds stand-ins for haze and `Modifier.blur`; call sites keep their shape and only change imports, to keep upstream merges easy. A "blurred" bar is its opaque colour. The haze dependencies are gone from `composeApp/build.gradle.kts`. `layerBackdrop` is a no-op, both `liquidGlass` overloads draw a flat pill, `getEnableLiquidGlass()` always returns `FALSE` and the setting row is gone.
+- **Effects that need blur.** `isLyricsBlurSupported()` returns `false` on Android and Desktop, so everything gated on it is never offered.
+- **Now Playing styles.** Classic is the only one: `getNowPlayingStyle()` always returns it and the picker is gone. The M3 Expressive and SoundCloud files are deleted. The Apple Music files stay because Classic and the lyrics renderer share pieces of them.
+- **Analytics, Wrapped and Listen Together.** Their screens are not registered in the navigation graphs, entry points are removed, `showAnalyticsTab` is `false`, and `AppLinks.kt` refuses `analytics` and the Wrapped library tab. The files stay in the tree (view models and components are shared, and merges stay simple). **Do not delete them, and do not navigate to their destinations.**
+- **Prompts and promos.** No review, share-lyrics, blog, kotlin-footguns or YouTube log-in dialogs, no launch banners, no chart promo pill. `BlogPromoDialog` and `FootgunsStarDialog` are deleted.
+- **Update checks.** `shouldCheckForUpdate()` returns `false` and the update rows are gone: upstream's APK is signed with another key.
+- **Blog notifications.** The RSS worker is never scheduled, is cancelled on each start, and its switch is gone.
+- **Official-build signature gate.** The `checkOfficialBuild` call in `MainActivity` is commented out, since it would block every build signed with our own key.
+
+### Changed or added
+
+- **Bottom bar:** `ui/component/SimpleBottomBar.kt`, a plain Material 3 `NavigationBar` (Home, Search, Library, plus Mix for you when signed in to YouTube) with the mini player above it. The current tab is the nearest tab root in the back stack; tapping it pops to that root.
+- **Settings:** a hub of 7 sections (`settingSections` in `SettingScreen.kt`). Search still covers every group. **A new `SettingGroup` item must be wrapped in `inSection("<key>")` and its key listed in a section**; an ungated item also shows on the hub.
+- **Images (Android only):** `ThumbnailDownscaleInterceptor` asks Google's image CDN for the size being drawn, never a larger one. It must stay registered before `NetworkFirstInterceptor`.
+- **Word-by-word lyrics:** opt-in, off by default (DataStore key `lite_word_by_word_lyrics`). Off, rich-synced sheets are shown line by line; the cache and contributed lyrics keep the word timings.
+- **AI:** "Translate lyrics with AI" in the song menus (Now Playing, fullscreen lyrics, fullscreen player), with a toast when it fails. A custom OpenAI base URL is always stored with a trailing slash.
+- **Idle animations:** `AudioPlayingIndicator` (the playing row in lists and the queue) draws one still frame; the fullscreen lyrics gradient no longer drifts, only its colour glides on a track change; the "Crossfading" shimmer on Now Playing and the fullscreen lyrics rainbow hue (`rememberRainbowHue`, now `internal`) are composed only while crossfading.
+- **Playback thread (a `core` patch, see below):** the player's `AudioSink` is no longer wrapped in `WaveformAudioSink`, so no live waveform or bass envelope is measured (`loadWaveform` has no caller on `lite`, and `bassPulse` only feeds the gated-off lyrics background, so it now answers 0; AutoMix measures from its own decode). `CrossfadeFilterAudioProcessor`'s pass-through is one bulk copy instead of a per-byte loop.
+
+### Changing `core`: patches, not commits
+
+`core` is upstream's submodule (`maxrave-dev/core`) and its pointer stays on an upstream commit. Lite's changes to it are patch files in `patches/core/`, applied by `lite-apk.yml` right after checkout; the build fails if one no longer applies.
+
+- To change `core`: edit it in place, write `git -C core diff` to a patch file, then restore the submodule with `git -C core checkout -- <files>`. Never commit a changed submodule pointer for a local `core` commit: CI cannot fetch it.
+- A local build needs them applied first, from the repository root: `git -C core apply "$PWD"/patches/core/*.patch`.
+- After a `core` bump, check each patch with `git -C core apply --check "$PWD"/patches/core/<name>.patch`.
+
+### Performance rules (the target phone has a weak GPU)
+
+The goal is to draw nothing when nothing visible changes.
+
+- **No animation that never ends.** An infinite transition or `CircularWavyProgressIndicator` redraws forever, even while paused. Compose such an animation only while it is really needed.
+- **Never read the whole timeline object in composition.** A new one arrives every 100 ms. Read narrow derived values (whole seconds, buffered fraction, sung line index) at the place that shows them, or read in the draw phase.
+- **No spring re-aimed on every position tick** (it never settles); progress moves in whole seconds.
+- **Marquees** go through `Modifier.titleMarquee()`, which on `lite` is `lowFpsMarquee` (`extension/LowFpsMarquee.kt`): about 12 fps on one shared tick, at most two passes.
+- Do not bring back blur, glass or an offscreen layer recorded every frame.
+
+### Building the Lite APK
+
+`.github/workflows/lite-apk.yml` runs on every push to `lite` and on manual dispatch. It builds the FOSS flavour (`-PisFullBuild=false`; `gradle.properties` defaults to `true`) for one ABI, `arm64-v8a` unless the `abis` input says otherwise. `-Psimpmusic.abis=<csv>` overrides androidApp's ABI list, and ABI splits are enabled only for more than one ABI. Without the `SIGNING_KEY` secret each build is signed with a new throwaway key, so the old app has to be uninstalled before installing the next one.
+
+### Working on `lite`
+
+- Mark each deliberate departure from upstream with a `// Lite fork:` comment.
+- Prefer unregistering, gating or stand-ins over deleting or rewriting shared upstream code, so merges stay small.
+- The `core` submodule pointer is upstream's; see "Changing `core`" above.
+- Record Lite-only changes in this section, not in the upstream changelog below.
 
 ## 📋 Project Overview
 
@@ -1256,6 +1312,6 @@ After completing any of the following types of changes, the AI agent **MUST** up
 
 *This document helps AI Agents quickly understand the SimpMusic project. Update regularly when there are major changes to architecture or structure.*
 
-**Last updated**: 2026-11-23
+**Last updated**: 2026-11-25
 **Project version**: Check latest release on GitHub
 **Maintained by**: maxrave-dev and contributors
