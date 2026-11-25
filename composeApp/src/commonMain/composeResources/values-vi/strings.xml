@@ -1069,4 +1069,9 @@
     <string name="ai_translate_needs_key">Hãy nhập khóa API AI trong Cài đặt → Tài khoản &amp; dịch vụ → AI trước</string>
     <string name="ai_translating">Đang dịch lời bài hát bằng AI…</string>
     <string name="ai_translate_failed">Dịch bằng AI thất bại. Kiểm tra khóa API, địa chỉ gốc và mô hình trong Cài đặt → Tài khoản &amp; dịch vụ → AI</string>
+    <string name="lite_original_author">Tác giả gốc</string>
+    <string name="lite_developer">Người phát triển bản Lite</string>
+    <string name="lite_source_code">Mã nguồn bản Lite</string>
+    <string name="lite_original_source">Dự án gốc</string>
+    <string name="lite_description">Bản fork cá nhân của SimpMusic, được tinh gọn để chạy nhẹ hơn trên máy yếu. Xây dựng trên công sức của maxrave-dev và phát hành theo cùng giấy phép GPL-3.0. Đây không phải bản phát hành chính thức của SimpMusic.</string>
 </resources>

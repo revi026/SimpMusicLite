@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -62,6 +63,38 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import simpmusic.composeapp.generated.resources.*
 
+/** Lite fork: the heading over each half of the credits. */
+@Composable
+private fun CreditHeading(text: String) {
+    Text(
+        text = text,
+        style = typo().titleMedium,
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 25.dp, vertical = 8.dp),
+        textAlign = TextAlign.Start,
+    )
+}
+
+/** Lite fork: a left-aligned link, laid out like the other credit buttons. */
+@Composable
+private fun ColumnScope.CreditLink(
+    text: String,
+    url: String,
+) {
+    TextButton(
+        onClick = { openUrl(url) },
+        modifier =
+            Modifier
+                .align(Alignment.Start)
+                .padding(horizontal = 25.dp)
+                .defaultMinSize(minHeight = 1.dp, minWidth = 1.dp),
+    ) {
+        Text(text = text)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreditScreen(
@@ -96,7 +129,7 @@ fun CreditScreen(
 
         // App name
         Text(
-            text = stringResource(Res.string.app_name),
+            text = stringResource(Res.string.lite_name),
             style = typo().titleLarge,
             fontSize = 22.sp,
         )
@@ -108,18 +141,28 @@ fun CreditScreen(
             fontSize = 13.sp,
         )
 
-        // Developer - clickable, opens dev blog
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Lite fork: this build first, the original project under its own heading below.
+        CreditHeading(stringResource(Res.string.lite_name))
         Text(
-            text = stringResource(Res.string.maxrave_dev),
+            text = stringResource(Res.string.lite_description),
             style = typo().bodyMedium,
-            textDecoration = TextDecoration.Underline,
             modifier =
-                Modifier.clickable {
-                    openUrl("https://maxrave.dev")
-                },
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 25.dp),
+            textAlign = TextAlign.Start,
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+            CreditLink(stringResource(Res.string.lite_developer) + ": revi026", "https://github.com/revi026")
+            CreditLink(stringResource(Res.string.lite_source_code), "https://github.com/revi026/SimpMusicLite")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        CreditHeading(stringResource(Res.string.lite_original_author) + ": " + stringResource(Res.string.maxrave_dev))
 
         // App description
         Text(

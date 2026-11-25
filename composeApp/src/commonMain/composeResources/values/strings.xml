@@ -1180,4 +1180,10 @@
     <string name="ai_translate_needs_key">Add your AI API key in Settings → Accounts &amp; services → AI first</string>
     <string name="ai_translating">Translating lyrics with AI…</string>
     <string name="ai_translate_failed">AI translation failed. Check the API key, base URL and model in Settings → Accounts &amp; services → AI</string>
+    <string name="lite_name" translatable="false">SimpMusic Lite</string>
+    <string name="lite_original_author">Original author</string>
+    <string name="lite_developer">Lite version developer</string>
+    <string name="lite_source_code">Lite source code</string>
+    <string name="lite_original_source">Original project</string>
+    <string name="lite_description">A personal fork of SimpMusic, trimmed to run lighter on weak phones. Built on the work of maxrave-dev and released under the same GPL-3.0 licence. It is not an official SimpMusic release.</string>
 </resources>

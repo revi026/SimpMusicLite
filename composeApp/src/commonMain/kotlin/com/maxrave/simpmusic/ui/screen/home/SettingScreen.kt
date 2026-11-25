@@ -379,6 +379,11 @@ import simpmusic.composeapp.generated.resources.lyrics_background_pulse_descript
 import simpmusic.composeapp.generated.resources.lyrics_background_pulse_needs_animated
 import simpmusic.composeapp.generated.resources.lyrics_style
 import simpmusic.composeapp.generated.resources.lyrics_offset
+import simpmusic.composeapp.generated.resources.lite_original_source
+import simpmusic.composeapp.generated.resources.lite_source_code
+import simpmusic.composeapp.generated.resources.lite_developer
+import simpmusic.composeapp.generated.resources.lite_original_author
+import simpmusic.composeapp.generated.resources.lite_name
 import simpmusic.composeapp.generated.resources.lyrics_offset_invalid
 import simpmusic.composeapp.generated.resources.lyrics_offset_message
 import simpmusic.composeapp.generated.resources.lyrics_offset_value
@@ -2850,8 +2855,9 @@ fun SettingScreen(
                     )
                 }
             }
-            if (inSection("about_us")) item(key = "about_us") {
-                SettingGroup(title = stringResource(Res.string.about_us)) {
+            // Lite fork: this build and the original author each get a group of their own.
+            if (inSection("about_lite")) item(key = "about_lite") {
+                SettingGroup(title = stringResource(Res.string.lite_name)) {
                     SettingItem(
                         title = stringResource(Res.string.version),
                         subtitle = stringResource(Res.string.version_format, VersionManager.getVersionName()),
@@ -2862,10 +2868,42 @@ fun SettingScreen(
                     // Lite fork: no update rows. The release channel is upstream's, whose APK is signed
                     // with another key and would not install over this one.
                     SettingItem(
+                        title = stringResource(Res.string.lite_developer),
+                        subtitle = "revi026",
+                        onClick = {
+                            uriHandler.openUri("https://github.com/revi026")
+                        },
+                    )
+                    SettingItem(
+                        title = stringResource(Res.string.lite_source_code),
+                        subtitle = "github.com/revi026/SimpMusicLite",
+                        onClick = {
+                            uriHandler.openUri("https://github.com/revi026/SimpMusicLite")
+                        },
+                    )
+                    SettingItem(
+                        title = stringResource(Res.string.third_party_libraries),
+                        subtitle = stringResource(Res.string.description_and_licenses),
+                        onClick = {
+                            showThirdPartyLibraries = true
+                        },
+                    )
+                }
+            }
+            if (inSection("about_us")) item(key = "about_us") {
+                SettingGroup(title = stringResource(Res.string.lite_original_author)) {
+                    SettingItem(
                         title = stringResource(Res.string.author),
                         subtitle = stringResource(Res.string.maxrave_dev),
                         onClick = {
                             uriHandler.openUri("https://github.com/maxrave-dev")
+                        },
+                    )
+                    SettingItem(
+                        title = stringResource(Res.string.lite_original_source),
+                        subtitle = "github.com/maxrave-dev/SimpMusic",
+                        onClick = {
+                            uriHandler.openUri("https://github.com/maxrave-dev/SimpMusic")
                         },
                     )
                     SettingItem(
@@ -2888,13 +2926,6 @@ fun SettingScreen(
                         subtitle = stringResource(Res.string.donation),
                         onClick = {
                             uriHandler.openUri("https://github.com/sponsors/maxrave-dev")
-                        },
-                    )
-                    SettingItem(
-                        title = stringResource(Res.string.third_party_libraries),
-                        subtitle = stringResource(Res.string.description_and_licenses),
-                        onClick = {
-                            showThirdPartyLibraries = true
                         },
                     )
                 }
@@ -3829,7 +3860,7 @@ private val settingSections: List<SettingsSectionDef> =
             setOf("login_sync", "AI", "spotify", "discord", "lastfm", "sponsor_block"),
         ),
         SettingsSectionDef("data", Res.string.settings_hub_data, SimpIcons.History, setOf("listening_history", "storage", "backup")),
-        SettingsSectionDef("about", Res.string.settings_hub_about, SimpIcons.Info, setOf("about_us", "developer_option")),
+        SettingsSectionDef("about", Res.string.settings_hub_about, SimpIcons.Info, setOf("about_lite", "about_us", "developer_option")),
     )
 
 /** The first thing Settings shows: one row per section, so nothing is more than two taps away. */

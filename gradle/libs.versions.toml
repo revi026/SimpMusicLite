@@ -1,6 +1,8 @@
 [versions]
 # App version
-version-name = "2.6.0"
+# Lite fork: its own version name (based on upstream 2.6.0). version-code stays upstream's and must never go
+# down, or Android refuses the update over an installed build.
+version-name = "1.0.0"
 version-code = "63"
 
 android = "9.5.0"
