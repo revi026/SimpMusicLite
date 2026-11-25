@@ -1,40 +1,36 @@
-# Contributing to SimpMusic
+# Đóng góp cho SimpMusic Lite
 
-Thanks for wanting to help! The short version:
+SimpMusic Lite là bản fork cá nhân của [SimpMusic](https://github.com/maxrave-dev/SimpMusic). Mục tiêu duy nhất của nó là **chạy nhẹ trên điện thoại Android cấu hình thấp**.
 
-1. **Start from an issue.** Every PR needs an accepted issue behind it — open one first
-   (or pick an existing one) so the change is agreed before the code exists. PRs with no
-   linked issue from new contributors get flagged by the triage bot.
-2. **Fork and branch from `dev`.** `dev` is the default and integration branch; `main`
-   tracks releases.
-3. **Follow the code around you.** Kotlin official conventions, Compose single-source-of-truth,
-   Clean Architecture layer rules — match what the neighbouring files already do.
-4. **Fill in the PR template.** All of it, including the checkboxes — one of them is
-   machine-checked.
-5. **Translations** go through [Crowdin](https://crowdin.com/project/simpmusic), not PRs
-   that edit the string files directly.
+Tính năng hay lỗi không liên quan đến bản Lite thì nên đóng góp thẳng cho dự án gốc, theo quy định của dự án đó.
 
-## AI policy
+## Trước khi gửi pull request
 
-AI-assisted contributions are welcome. AI-*driven* ones are not:
+- **Thay đổi lớn:** hãy [tạo issue](https://github.com/revi026/SimpMusicLite/issues/new/choose) để trao đổi trước. Sửa lỗi nhỏ thì gửi thẳng cũng được.
+- **Nhánh:** tách nhánh từ `lite` và gửi pull request vào `lite`.
+- **Tự kiểm tra:** pull request không được tự động build. Hãy ghi rõ bạn đã thử thế nào, trên máy nào.
 
-- A human must have **written or personally reviewed every line** of the PR and be able
-  to answer review comments about it. "The agent wrote it, I skimmed it" does not count.
-- **Unattended agent submissions** — PRs fired at this repository by coding agents
-  (Jules, Devin, OpenHands, and friends) without a human shaping and checking the
-  result — are **closed automatically** by the triage workflow, on sight, without
-  individual discussion. Their fingerprints (agent names, session ids, or bare commit
-  hashes in the title) are matched by `.github/workflows/pr-triage.yml`.
-- **Commits carrying AI co-author trailers** (`Co-Authored-By: Claude/Copilot/…`) or
-  "Generated with …" markers are rejected the same way — a leftover trailer is the tell
-  that nobody proofread the output. Squash them out before opening the PR.
-- Repeat offenders get blocked from the repository.
+## Quy ước
 
-This is not hostility toward AI tooling — half this project is built with it. It is the
-difference between a contribution someone stands behind and unreviewed output pointed at
-volunteer maintainers. Review time is the scarcest resource this project has; spending it
-on machine-generated PRs nobody proofread takes it away from contributors who did the work.
+- Viết theo phong cách của mã xung quanh. Mã, chú thích và nội dung commit viết bằng tiếng Anh.
+- Đánh dấu mỗi chỗ cố ý làm khác bản gốc bằng chú thích `// Lite fork:`.
+- Ưu tiên tắt, chặn hoặc thay thế hơn là xóa mã dùng chung với bản gốc, để còn cập nhật theo bản gốc được.
+- `core` là submodule của dự án gốc: thay đổi trong đó phải ở dạng patch trong [`patches/core`](patches/core), đừng đổi con trỏ submodule.
+- Chuỗi hiển thị mới cần có bản tiếng Anh và tiếng Việt.
 
-## Code of conduct
+## Hiệu năng
 
-See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Máy mục tiêu có GPU yếu, nên khi không có gì thay đổi trên màn hình thì app không nên vẽ gì cả.
+
+- Không thêm hoạt ảnh chạy không ngừng.
+- Không đưa blur, liquid glass hay lớp vẽ đệm cập nhật mỗi khung hình trở lại.
+- Không đọc cả đối tượng timeline khi dựng giao diện: nó đổi mỗi 100 ms. Chỉ đọc giá trị thật sự hiển thị.
+- Tránh chồng nhiều lớp nền phủ toàn màn hình.
+
+## An toàn
+
+Đừng đưa cookie, API key, token, file khóa ký hay thông tin cá nhân vào mã, commit, ảnh chụp hoặc log.
+
+## Giấy phép
+
+Đóng góp được phát hành theo [GPL-3.0](LICENSE), cùng giấy phép với dự án.

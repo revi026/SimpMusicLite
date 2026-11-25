@@ -1,22 +1,20 @@
-## What & why
+## Thay đổi gì và vì sao
 
-<!-- What does this change do, and why is it worth having? -->
+<!-- Thay đổi này làm gì, và vì sao bản Lite cần nó? -->
 
-## Linked issue
+## Issue liên quan
 
-<!-- Every PR needs an accepted issue behind it. "Closes #1234" -->
+<!-- Ví dụ: Closes #12. Sửa lỗi nhỏ có thể để trống. -->
 
-Closes #
+## Đã thử thế nào
 
-## Checklist
+<!-- Đời máy, phiên bản Android, bản 64-bit hay 32-bit, và những gì bạn đã thử. Nếu chưa build được thì ghi rõ. -->
 
-- [ ] This PR addresses an accepted issue (linked above)
-- [ ] I wrote or personally reviewed every line of this change
-- [ ] I tested it on Android and/or Desktop (say which, and how)
+## Kiểm tra trước khi gửi
 
-<!--
-AI-assisted work is welcome — a human who understands the change must stand behind
-it. Unattended agent submissions are closed automatically; see CONTRIBUTING.md.
-The second checkbox is machine-checked: leaving it unticked will get the PR
-flagged by the triage bot.
--->
+- [ ] Mình đã tự viết hoặc đọc kỹ từng dòng thay đổi
+- [ ] Không thêm hoạt ảnh chạy không ngừng, blur hay lớp nền chồng lên nhau
+- [ ] Chỗ cố ý làm khác bản gốc đã được đánh dấu `// Lite fork:`
+- [ ] Không có cookie, API key, token hay thông tin cá nhân trong mã, ảnh chụp và log
+
+<!-- Xem CONTRIBUTING.md. -->

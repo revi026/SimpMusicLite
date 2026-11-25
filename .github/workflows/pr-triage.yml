@@ -42,6 +42,9 @@ env:
 
 jobs:
   triage:
+    # Lite fork: this is upstream's pull request policy (it closes PRs and checks upstream's English template), so
+    # it runs in upstream's repository only. The file is kept so merges stay clean.
+    if: github.repository == 'maxrave-dev/SimpMusic'
     runs-on: ubuntu-latest
     steps:
       - name: Triage untrusted PRs

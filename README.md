@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="composeApp/src/commonMain/composeResources/drawable/app_icon.png" width="120" alt="Logo SimpMusic Lite">
+<img src="asset/lite_logo.png" width="120" alt="Logo SimpMusic Lite">
 
 # SimpMusic Lite
 
