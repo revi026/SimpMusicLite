@@ -16,7 +16,7 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.utils.VersionManager
 import org.jetbrains.compose.resources.stringResource
 import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.app_name
+import simpmusic.composeapp.generated.resources.lite_name
 import simpmusic.composeapp.generated.resources.version_format
 
 @Composable
@@ -30,11 +30,11 @@ fun EndOfPage(withoutCredit: Boolean = false) {
     ) {
         if (!withoutCredit) {
             Text(
-                "@${now().year} " + stringResource(Res.string.app_name) + " " +
+                "@${now().year} " + stringResource(Res.string.lite_name) + " " +
                     stringResource(
                         Res.string.version_format,
                         VersionManager.getVersionName(),
-                    ) + "\nmaxrave-dev",
+                    ) + "\nrevi026 · maxrave-dev", // Lite fork: both, this build's developer first
                 style = typo().bodySmall,
                 textAlign = TextAlign.Center,
                 modifier =

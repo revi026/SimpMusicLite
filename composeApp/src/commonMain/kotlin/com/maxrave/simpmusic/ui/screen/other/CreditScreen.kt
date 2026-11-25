@@ -305,7 +305,7 @@ fun CreditScreen(
                 .hazeBlur(HazeInput.Sources(hazeState), ultraThinBarStyle()),
         title = {
             Text(
-                text = stringResource(Res.string.app_name),
+                text = stringResource(Res.string.lite_name),
                 style = typo().titleMedium,
                 maxLines = 1,
                 modifier =
