@@ -82,7 +82,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abis.forEach { abiFilters.add(it) }
+            // Lite fork: exactly one of ndk.abiFilters and the ABI splits is ever set. One ABI uses the filter;
+            // several are left to the splits below.
+            if (abis.size == 1) abiFilters.add(abis.single())
         }
     }
 
@@ -103,10 +105,11 @@ android {
             splits {
                 abi {
                     // AGP rejects the same ABI in ndk.abiFilters and in splits, so a single-ABI
-                    // build relies on abiFilters alone.
+                    // build relies on abiFilters alone (see defaultConfig).
                     isEnable = abis.size > 1
                     reset()
-                    isUniversalApk = true
+                    // Lite fork: one APK per ABI and no universal one, which would be half as large again.
+                    isUniversalApk = false
                     include(*abis)
                 }
             }

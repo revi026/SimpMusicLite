@@ -1,7 +1,8 @@
 name: Build lite APK (FOSS, single ABI)
 
-# Fork-only workflow: builds the FOSS flavour (no Sentry, no Cast, no Last.fm) for one CPU ABI
-# and signs it. It needs no secrets. Without a SIGNING_KEY secret it signs with a throwaway key
+# Fork-only workflow: builds the FOSS flavour (no Sentry, no Cast, no Last.fm), one APK per CPU ABI
+# (64-bit and 32-bit ARM by default) and signs them. It needs no secrets. Without a SIGNING_KEY
+# secret it signs with a throwaway key
 # (see the "Prepare signing key" step).
 
 on:
@@ -10,7 +11,7 @@ on:
       abis:
         description: "Comma-separated ABIs to build (armeabi-v7a, arm64-v8a, x86_64)"
         required: false
-        default: "arm64-v8a"
+        default: "arm64-v8a,armeabi-v7a"
   push:
     branches:
       - lite
@@ -58,7 +59,7 @@ jobs:
         run: |
           ./gradlew androidApp:assembleRelease \
             -PisFullBuild=false \
-            -Psimpmusic.abis=${{ inputs.abis || 'arm64-v8a' }} \
+            -Psimpmusic.abis=${{ inputs.abis || 'arm64-v8a,armeabi-v7a' }} \
             --stacktrace 2>&1 | tee "$RUNNER_TEMP/build.log"
 
       # Logs need a login to read; annotations do not. Surface the Gradle error there.

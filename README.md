@@ -4,7 +4,7 @@
 
 Bản fork cá nhân của [SimpMusic](https://github.com/maxrave-dev/SimpMusic), được tinh gọn để chạy nhẹ hơn trên điện thoại Android cấu hình thấp.
 
-**Phiên bản 1.0.1** · dựa trên SimpMusic 2.6.0 · GPL-3.0
+**Phiên bản 1.1.0** · dựa trên SimpMusic 2.6.0 · GPL-3.0
 
 *A personal, lighter fork of SimpMusic for low-end Android phones. Not an official SimpMusic release.*
 
@@ -37,9 +37,11 @@ Bản fork cá nhân của [SimpMusic](https://github.com/maxrave-dev/SimpMusic)
 
 ## Tải về
 
-**[Tải bản mới nhất ở trang Releases](https://github.com/revi026/SimpMusicLite/releases/latest)**, lấy file `.apk`.
+**[Tải bản mới nhất ở trang Releases](https://github.com/revi026/SimpMusicLite/releases/latest)**, lấy file `.apk` hợp với máy.
 
-- Yêu cầu Android 8.0 trở lên, máy `arm64-v8a`.
+- Yêu cầu Android 8.0 trở lên. Chọn file theo máy:
+  - `arm64-v8a`: máy 64-bit, tức hầu hết điện thoại hiện nay.
+  - `armeabi-v7a`: máy hoặc ROM 32-bit.
 - Tên gói là `com.revi026.simpmusiclite`, khác bản gốc, nên **cài song song được** với SimpMusic. Hai app không dùng chung dữ liệu.
 - Muốn mang dữ liệu sang: trong app cũ chọn Cài đặt → Dữ liệu & lưu trữ → **Sao lưu**, rồi chọn **Khôi phục** trong bản Lite.
 - Android coi bản build trước khi đổi tên gói (`com.maxrave.simpmusic`) là một app khác. Sau khi đã chuyển dữ liệu, bạn có thể gỡ nó.
