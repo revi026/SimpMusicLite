@@ -356,8 +356,10 @@ fun HomeScreen(
     LaunchedEffect(dominantColorState, isLightTheme) {
         snapshotFlow { dominantColorState.color }.collect {
             // Light theme: pull the artwork color toward white for a soft pastel header;
-            // dark theme keeps the original darkened tone.
-            topHeaderColor = if (isLightTheme) lerp(it, Color.White, 0.85f) else it.rgbFactor(0.3f)
+            // dark theme keeps a darkened tone.
+            // Lite fork: 0.45 instead of 0.3. The tint is now all there is to the glow (the header picture that
+            // used to cover it is gone), and at 0.3 a dark cover left the top of Home looking flat black.
+            topHeaderColor = if (isLightTheme) lerp(it, Color.White, 0.85f) else it.rgbFactor(0.45f)
         }
     }
 
