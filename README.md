@@ -37,16 +37,15 @@ Bản fork cá nhân của [SimpMusic](https://github.com/maxrave-dev/SimpMusic)
 
 ## Tải về
 
-Chưa có trang Releases. APK `arm64-v8a` được GitHub Actions build sau mỗi lần cập nhật nhánh `lite`:
+**[Tải bản mới nhất ở trang Releases](https://github.com/revi026/SimpMusicLite/releases/latest)**, lấy file `.apk`.
 
-1. Mở tab [Actions](https://github.com/revi026/SimpMusicLite/actions) (cần đăng nhập GitHub).
-2. Chọn lần chạy thành công mới nhất.
-3. Tải artifact `simpmusic-lite` (được lưu 14 ngày).
+- Yêu cầu Android 8.0 trở lên, máy `arm64-v8a`.
+- Tên gói là `com.revi026.simpmusiclite`, khác bản gốc, nên **cài song song được** với SimpMusic. Hai app không dùng chung dữ liệu.
+- Muốn mang dữ liệu sang: trong app cũ chọn Cài đặt → Dữ liệu & lưu trữ → **Sao lưu**, rồi chọn **Khôi phục** trong bản Lite.
+- Android coi bản build trước khi đổi tên gói (`com.maxrave.simpmusic`) là một app khác. Sau khi đã chuyển dữ liệu, bạn có thể gỡ nó.
+- File `.sha256` đi kèm dùng để kiểm tra APK tải về có nguyên vẹn không.
 
-Yêu cầu Android 8.0 trở lên.
-
-> [!IMPORTANT]
-> Bản Lite dùng chung tên gói với SimpMusic gốc nhưng ký bằng khóa khác. Nếu máy đang cài bản gốc, bạn phải gỡ nó trước. Hãy sao lưu trong Cài đặt trước khi gỡ, vì gỡ app sẽ xóa dữ liệu.
+Muốn thử bản mới nhất chưa phát hành: tải artifact `simpmusic-lite` trong tab [Actions](https://github.com/revi026/SimpMusicLite/actions) (cần đăng nhập GitHub, được lưu 14 ngày).
 
 ## Tự build
 

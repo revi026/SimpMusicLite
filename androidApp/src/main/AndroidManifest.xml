@@ -56,7 +56,7 @@
         </intent>
     </queries>
     <queries>
-        <package android:name="com.maxrave.simpmusic" />
+        <package android:name="com.revi026.simpmusiclite" />
     </queries>
     <queries>
         <intent>

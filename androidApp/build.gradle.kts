@@ -29,7 +29,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.maxrave.simpmusic"
+        // Lite fork: its own id, so it installs beside upstream's app. The namespace above stays upstream's:
+        // it is the code's package, and keeping it keeps merges small.
+        applicationId = "com.revi026.simpmusiclite"
         minSdk = 26
         targetSdk = 36
         versionCode =
