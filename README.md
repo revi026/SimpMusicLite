@@ -4,7 +4,7 @@
 
 Bản fork cá nhân của [SimpMusic](https://github.com/maxrave-dev/SimpMusic), được tinh gọn để chạy nhẹ hơn trên điện thoại Android cấu hình thấp.
 
-**Phiên bản 1.0.0** · dựa trên SimpMusic 2.6.0 · GPL-3.0
+**Phiên bản 1.0.1** · dựa trên SimpMusic 2.6.0 · GPL-3.0
 
 *A personal, lighter fork of SimpMusic for low-end Android phones. Not an official SimpMusic release.*
 

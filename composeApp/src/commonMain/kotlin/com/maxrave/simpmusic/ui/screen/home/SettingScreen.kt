@@ -537,7 +537,8 @@ fun SettingScreen(
         LocalDateTime.Format {
             byUnicodePattern("yyyyMMddHHmmss")
         }
-    val appName = stringResource(Res.string.app_name)
+    // Lite fork: this names the backup file, so no space from "SimpMusic Lite".
+    val appName = stringResource(Res.string.app_name).replace(" ", "")
 
     val backupLauncher =
         fileSaverResult(
