@@ -66,7 +66,7 @@ body:
     attributes:
       label: Phiên bản SimpMusic Lite
       description: Xem trong Cài đặt → Giới thiệu & nhà phát triển.
-      placeholder: "ví dụ: 1.1.0"
+      placeholder: "ví dụ: 1.1.1"
     validations:
       required: true
 

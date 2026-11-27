@@ -2,8 +2,8 @@
 # App version
 # Lite fork: its own version numbers (based on upstream 2.6.0), under its own application id. Raise both for
 # each release; version-code must never go down, or Android refuses the update over an installed build.
-version-name = "1.1.0"
-version-code = "65"
+version-name = "1.1.1"
+version-code = "66"
 
 android = "9.5.0"
 kotlin = "2.4.21"
