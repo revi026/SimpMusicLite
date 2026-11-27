@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A 4x1 player bar. updatePeriodMillis is 0 for the same reason as the Turntable widget:
+     it redraws when the playback state changes. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_mini_player_description"
+    android:previewImage="@drawable/widget_preview_img_mini_player"
+    android:previewLayout="@layout/widget_preview_mini_player"
+    android:resizeMode="horizontal"
+    android:targetCellWidth="4"
+    android:targetCellHeight="1"
+    android:minWidth="250dp"
+    android:minHeight="40dp"
+    android:minResizeWidth="180dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

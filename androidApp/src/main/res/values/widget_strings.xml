@@ -6,6 +6,8 @@
   Settings tile's label is the same case: the manifest names it, and the tile editor shows it.
 -->
 <resources>
+    <string name="widget_mini_player_label">Mini player</string>
+    <string name="widget_mini_player_description">A one-row player bar with previous, play and next</string>
     <string name="widget_turntable_label">Turntable</string>
     <string name="widget_turntable_description">Album art with play and skip</string>
     <string name="widget_playlists_label">Playlists</string>

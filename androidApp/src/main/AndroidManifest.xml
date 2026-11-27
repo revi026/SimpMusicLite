@@ -309,6 +309,17 @@
         </service>
 
 
+        <receiver android:name=".ui.widget.MiniPlayerWidgetReceiver"
+            android:label="@string/widget_mini_player_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/mini_player_widget_info" />
+        </receiver>
+
         <receiver android:name=".ui.widget.TurntableWidgetReceiver"
             android:label="@string/widget_turntable_label"
             android:exported="true">
