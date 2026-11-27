@@ -13,7 +13,7 @@ Bản fork cá nhân của [SimpMusic](https://github.com/maxrave-dev/SimpMusic)
 </div>
 
 > [!NOTE]
-> Đây **không phải** bản phát hành chính thức của SimpMusic, và tác giả gốc không hỗ trợ bản này. Bản Lite được chỉnh và đo hiệu năng trên một máy: Galaxy J7 Prime chạy ROM port Android 15. Bản 32-bit đã được thử cơ bản (mở app, tìm kiếm, phát nhạc, lời bài hát) trên một máy Galaxy J3 Pro 2017 chạy ROM cook, Android 10.
+> Đây **không phải** bản phát hành chính thức của SimpMusic, và tác giả gốc không hỗ trợ bản này. Bản Lite được chỉnh và đo hiệu năng trên một máy: Galaxy J7 Prime chạy ROM One UI 7. Bản 32-bit đã được thử cơ bản (mở app, tìm kiếm, phát nhạc, lời bài hát) trên một máy Galaxy J3 Pro 2017 chạy ROM One UI 2.5.
 
 ## Khác gì so với bản gốc
 
